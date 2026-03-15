@@ -11,4 +11,3 @@ This repository contains the clean CIFAR-10 research workflow for:
 
 Main notebook: `notebooks/cifar10_staq.ipynb`
 
-Source attribution: `ATTRIBUTION.md`
