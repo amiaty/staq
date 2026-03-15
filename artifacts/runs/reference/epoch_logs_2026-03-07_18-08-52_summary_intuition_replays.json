@@ -1,0 +1,1545 @@
+{
+  "threshold": 0.95,
+  "max_steps": 20,
+  "init_history_min": 1,
+  "init_history_max": 2,
+  "init_history_mode": "random",
+  "pool_size": 400,
+  "num_trials": 2,
+  "random_seed": 20260315,
+  "selected": [
+    {
+      "sample_idx": 6940,
+      "trial": 1,
+      "label_idx": 1,
+      "label_name": "automobile",
+      "initial_history": [
+        "antlers=no",
+        "feathers=no"
+      ],
+      "initial_history_size": 2,
+      "baseline": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.22503414750099182
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.20142613351345062
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.2730777859687805
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.31719639897346497
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.36412733793258667
+          },
+          {
+            "after_queries": 5,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.5494607090950012
+          },
+          {
+            "after_queries": 6,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.99909508228302
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 59,
+            "concept": "a reins",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 5,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 6,
+            "idx": 74,
+            "concept": "a trailer",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 6,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 1,
+        "final_pred_name": "automobile",
+        "final_confidence": 0.99909508228302,
+        "initial_confidence": 0.22503414750099182,
+        "initial_pred_name": "horse"
+      },
+      "fair": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.23388421535491943
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.2670055627822876
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.5034964680671692
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.9561322331428528
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 74,
+            "concept": "a trailer",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 3,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 1,
+        "final_pred_name": "automobile",
+        "final_confidence": 0.9561322331428528,
+        "initial_confidence": 0.23388421535491943,
+        "initial_pred_name": "horse"
+      },
+      "baseline_correct": true,
+      "fair_correct": true,
+      "both_correct": true,
+      "first_divergence_step": 1,
+      "sensitive_gap": 0,
+      "query_gap": 3
+    },
+    {
+      "sample_idx": 9968,
+      "trial": 1,
+      "label_idx": 3,
+      "label_name": "cat",
+      "initial_history": [
+        "insects=no"
+      ],
+      "initial_history_size": 1,
+      "baseline": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.14024832844734192
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 3,
+            "pred_name": "cat",
+            "confidence": 0.525600016117096
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 3,
+            "pred_name": "cat",
+            "confidence": 0.9989380240440369
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 30,
+            "concept": "a four-legged mammal",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 2,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 3,
+        "final_pred_name": "cat",
+        "final_confidence": 0.9989380240440369,
+        "initial_confidence": 0.14024832844734192,
+        "initial_pred_name": "horse"
+      },
+      "fair": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.13115866482257843
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.16872946918010712
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.293767511844635
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.522319495677948
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 3,
+            "pred_name": "cat",
+            "confidence": 0.6347298622131348
+          },
+          {
+            "after_queries": 5,
+            "pred_idx": 3,
+            "pred_name": "cat",
+            "confidence": 0.9944586753845215
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 94,
+            "concept": "hooves",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 5,
+            "idx": 109,
+            "concept": "object",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 5,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 3,
+        "final_pred_name": "cat",
+        "final_confidence": 0.9944586753845215,
+        "initial_confidence": 0.13115866482257843,
+        "initial_pred_name": "horse"
+      },
+      "baseline_correct": true,
+      "fair_correct": true,
+      "both_correct": true,
+      "first_divergence_step": 1,
+      "sensitive_gap": 0,
+      "query_gap": -3
+    },
+    {
+      "sample_idx": 2106,
+      "trial": 1,
+      "label_idx": 5,
+      "label_name": "dog",
+      "initial_history": [
+        "a pilot=no",
+        "grass=no"
+      ],
+      "initial_history_size": 2,
+      "baseline": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.17311523854732513
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.2134133130311966
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.26879623532295227
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.2885056734085083
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.3499501943588257
+          },
+          {
+            "after_queries": 5,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.8833224773406982
+          },
+          {
+            "after_queries": 6,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.9970691800117493
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 59,
+            "concept": "a reins",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 5,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 6,
+            "idx": 94,
+            "concept": "hooves",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 6,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 5,
+        "final_pred_name": "dog",
+        "final_confidence": 0.9970691800117493,
+        "initial_confidence": 0.17311523854732513,
+        "initial_pred_name": "horse"
+      },
+      "fair": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 9,
+            "pred_name": "truck",
+            "confidence": 0.14837776124477386
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 3,
+            "pred_name": "cat",
+            "confidence": 0.24822618067264557
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.4292266368865967
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.7832314968109131
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.9945129156112671
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 59,
+            "concept": "a reins",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 94,
+            "concept": "hooves",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 4,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 5,
+        "final_pred_name": "dog",
+        "final_confidence": 0.9945129156112671,
+        "initial_confidence": 0.14837776124477386,
+        "initial_pred_name": "truck"
+      },
+      "baseline_correct": true,
+      "fair_correct": true,
+      "both_correct": true,
+      "first_divergence_step": 1,
+      "sensitive_gap": 0,
+      "query_gap": 2
+    },
+    {
+      "sample_idx": 9015,
+      "trial": 1,
+      "label_idx": 8,
+      "label_name": "ship",
+      "initial_history": [
+        "a large, metal body=no"
+      ],
+      "initial_history_size": 1,
+      "baseline": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.225407674908638
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.3201145827770233
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.5681679844856262
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.835202693939209
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 8,
+            "pred_name": "ship",
+            "confidence": 0.5828647613525391
+          },
+          {
+            "after_queries": 5,
+            "pred_idx": 8,
+            "pred_name": "ship",
+            "confidence": 0.5025662183761597
+          },
+          {
+            "after_queries": 6,
+            "pred_idx": 8,
+            "pred_name": "ship",
+            "confidence": 0.9996813535690308
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 59,
+            "concept": "a reins",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 94,
+            "concept": "hooves",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 5,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 6,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 6,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 8,
+        "final_pred_name": "ship",
+        "final_confidence": 0.9996813535690308,
+        "initial_confidence": 0.225407674908638,
+        "initial_pred_name": "horse"
+      },
+      "fair": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.18234866857528687
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 2,
+            "pred_name": "bird",
+            "confidence": 0.6416348814964294
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 8,
+            "pred_name": "ship",
+            "confidence": 0.6558881998062134
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 8,
+            "pred_name": "ship",
+            "confidence": 0.6002359986305237
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 8,
+            "pred_name": "ship",
+            "confidence": 0.9997872710227966
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 4,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 8,
+        "final_pred_name": "ship",
+        "final_confidence": 0.9997872710227966,
+        "initial_confidence": 0.18234866857528687,
+        "initial_pred_name": "horse"
+      },
+      "baseline_correct": true,
+      "fair_correct": true,
+      "both_correct": true,
+      "first_divergence_step": 1,
+      "sensitive_gap": 0,
+      "query_gap": 2
+    },
+    {
+      "sample_idx": 6967,
+      "trial": 1,
+      "label_idx": 4,
+      "label_name": "deer",
+      "initial_history": [
+        "a birdfeeder=no",
+        "a nose=no"
+      ],
+      "initial_history_size": 2,
+      "baseline": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.23700226843357086
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.19862893223762512
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.25468000769615173
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.3101691007614136
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 9,
+            "pred_name": "truck",
+            "confidence": 0.3673083484172821
+          },
+          {
+            "after_queries": 5,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.57536381483078
+          },
+          {
+            "after_queries": 6,
+            "pred_idx": 4,
+            "pred_name": "deer",
+            "confidence": 0.9972544312477112
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 59,
+            "concept": "a reins",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 5,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 6,
+            "idx": 21,
+            "concept": "a deer stand",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 6,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 4,
+        "final_pred_name": "deer",
+        "final_confidence": 0.9972544312477112,
+        "initial_confidence": 0.23700226843357086,
+        "initial_pred_name": "horse"
+      },
+      "fair": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.2031087577342987
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.2041613608598709
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.38402631878852844
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.6770073771476746
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 4,
+            "pred_name": "deer",
+            "confidence": 0.996871292591095
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 94,
+            "concept": "hooves",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 59,
+            "concept": "a reins",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 4,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 4,
+        "final_pred_name": "deer",
+        "final_confidence": 0.996871292591095,
+        "initial_confidence": 0.2031087577342987,
+        "initial_pred_name": "horse"
+      },
+      "baseline_correct": true,
+      "fair_correct": true,
+      "both_correct": true,
+      "first_divergence_step": 2,
+      "sensitive_gap": 0,
+      "query_gap": 2
+    },
+    {
+      "sample_idx": 491,
+      "trial": 1,
+      "label_idx": 0,
+      "label_name": "airplane",
+      "initial_history": [
+        "a collar=no"
+      ],
+      "initial_history_size": 1,
+      "baseline": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.26506760716438293
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.2013656198978424
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.22503024339675903
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.42505428194999695
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.5465198159217834
+          },
+          {
+            "after_queries": 5,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.9998735189437866
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 74,
+            "concept": "a trailer",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 5,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 5,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 0,
+        "final_pred_name": "airplane",
+        "final_confidence": 0.9998735189437866,
+        "initial_confidence": 0.26506760716438293,
+        "initial_pred_name": "horse"
+      },
+      "fair": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.23952335119247437
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.2234628051519394
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.6650597453117371
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.9992613196372986
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 3,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 0,
+        "final_pred_name": "airplane",
+        "final_confidence": 0.9992613196372986,
+        "initial_confidence": 0.23952335119247437,
+        "initial_pred_name": "horse"
+      },
+      "baseline_correct": true,
+      "fair_correct": true,
+      "both_correct": true,
+      "first_divergence_step": 1,
+      "sensitive_gap": 0,
+      "query_gap": 2
+    },
+    {
+      "sample_idx": 2045,
+      "trial": 1,
+      "label_idx": 1,
+      "label_name": "automobile",
+      "initial_history": [
+        "side windows=yes"
+      ],
+      "initial_history_size": 1,
+      "baseline": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.3875812888145447
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.7385998368263245
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.8081581592559814
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.9077343940734863
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.9125401377677917
+          },
+          {
+            "after_queries": 5,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.9996108412742615
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 74,
+            "concept": "a trailer",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 5,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 5,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 1,
+        "final_pred_name": "automobile",
+        "final_confidence": 0.9996108412742615,
+        "initial_confidence": 0.3875812888145447,
+        "initial_pred_name": "automobile"
+      },
+      "fair": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.4072440266609192
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.45580071210861206
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.8902642130851746
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.971662700176239
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 63,
+            "concept": "a rudder",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 74,
+            "concept": "a trailer",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 3,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 1,
+        "final_pred_name": "automobile",
+        "final_confidence": 0.971662700176239,
+        "initial_confidence": 0.4072440266609192,
+        "initial_pred_name": "automobile"
+      },
+      "baseline_correct": true,
+      "fair_correct": true,
+      "both_correct": true,
+      "first_divergence_step": 1,
+      "sensitive_gap": 0,
+      "query_gap": 2
+    },
+    {
+      "sample_idx": 4456,
+      "trial": 1,
+      "label_idx": 7,
+      "label_name": "horse",
+      "initial_history": [
+        "a cage=no"
+      ],
+      "initial_history_size": 1,
+      "baseline": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.1336331069469452
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 0,
+            "pred_name": "airplane",
+            "confidence": 0.1567312628030777
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 1,
+            "pred_name": "automobile",
+            "confidence": 0.22026991844177246
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 5,
+            "pred_name": "dog",
+            "confidence": 0.5053013563156128
+          },
+          {
+            "after_queries": 4,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.660912811756134
+          },
+          {
+            "after_queries": 5,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.9995100498199463
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 68,
+            "concept": "a small, lithe body",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 122,
+            "concept": "watercraft",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 4,
+            "idx": 94,
+            "concept": "hooves",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 5,
+            "idx": 59,
+            "concept": "a reins",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 5,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 7,
+        "final_pred_name": "horse",
+        "final_confidence": 0.9995100498199463,
+        "initial_confidence": 0.1336331069469452,
+        "initial_pred_name": "automobile"
+      },
+      "fair": {
+        "states": [
+          {
+            "after_queries": 0,
+            "pred_idx": 9,
+            "pred_name": "truck",
+            "confidence": 0.13485115766525269
+          },
+          {
+            "after_queries": 1,
+            "pred_idx": 6,
+            "pred_name": "frog",
+            "confidence": 0.22327178716659546
+          },
+          {
+            "after_queries": 2,
+            "pred_idx": 6,
+            "pred_name": "frog",
+            "confidence": 0.4220272898674011
+          },
+          {
+            "after_queries": 3,
+            "pred_idx": 7,
+            "pred_name": "horse",
+            "confidence": 0.9995985627174377
+          }
+        ],
+        "sequence": [
+          {
+            "step": 1,
+            "idx": 112,
+            "concept": "quadruped",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 2,
+            "idx": 111,
+            "concept": "pointed ears",
+            "answer": -1.0,
+            "answer_name": "no",
+            "sensitive": false,
+            "prob": 1.0
+          },
+          {
+            "step": 3,
+            "idx": 59,
+            "concept": "a reins",
+            "answer": 1.0,
+            "answer_name": "yes",
+            "sensitive": false,
+            "prob": 1.0
+          }
+        ],
+        "queries_asked": 3,
+        "sensitive_steps": 0,
+        "first_sensitive_step": null,
+        "stop_reason": "confidence",
+        "reached_threshold": true,
+        "final_pred_idx": 7,
+        "final_pred_name": "horse",
+        "final_confidence": 0.9995985627174377,
+        "initial_confidence": 0.13485115766525269,
+        "initial_pred_name": "truck"
+      },
+      "baseline_correct": true,
+      "fair_correct": true,
+      "both_correct": true,
+      "first_divergence_step": 1,
+      "sensitive_gap": 0,
+      "query_gap": 2
+    }
+  ]
+}

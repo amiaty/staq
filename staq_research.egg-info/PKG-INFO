@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: staq-research
+Version: 0.1.0
+Summary: STAQ: Semantic Trustworthy Active Querying, adapted from the VIP paper repository.
+Requires-Python: >=3.10

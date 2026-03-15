@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "staq-research"
+version = "0.1.0"
+description = "STAQ: Semantic Trustworthy Active Querying, adapted from the VIP paper repository."
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["staq*"]

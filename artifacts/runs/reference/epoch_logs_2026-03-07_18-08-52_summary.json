@@ -1,0 +1,93 @@
+[
+  {
+    "name": "baseline",
+    "lambda_adv": 0.0,
+    "alpha_sens": 0.0,
+    "mean_test_acc": 0.91224,
+    "mean_test_sens_q_rate": 0.015712890625,
+    "min_test_sens_q_rate": 0.013671875,
+    "min_sens_epoch": 9,
+    "test_acc": 0.9143,
+    "test_sens_q_rate": 0.01455078125,
+    "test_sens_loss": 0.6570062667131424,
+    "epoch": 10
+  },
+  {
+    "name": "lam_0.05",
+    "lambda_adv": 0.05,
+    "alpha_sens": 0.0,
+    "mean_test_acc": 0.9120500000000001,
+    "mean_test_sens_q_rate": 0.015380859375,
+    "min_test_sens_q_rate": 0.012890625,
+    "min_sens_epoch": 9,
+    "test_acc": 0.9139,
+    "test_sens_q_rate": 0.012890625,
+    "test_sens_loss": 0.6573085457086563,
+    "epoch": 9
+  },
+  {
+    "name": "lam_0.10",
+    "lambda_adv": 0.1,
+    "alpha_sens": 0.0,
+    "mean_test_acc": 0.91234,
+    "mean_test_sens_q_rate": 0.01513671875,
+    "min_test_sens_q_rate": 0.01259765625,
+    "min_sens_epoch": 9,
+    "test_acc": 0.9157,
+    "test_sens_q_rate": 0.01259765625,
+    "test_sens_loss": 0.6573176279664039,
+    "epoch": 9
+  },
+  {
+    "name": "lam_0.20",
+    "lambda_adv": 0.2,
+    "alpha_sens": 0.0,
+    "mean_test_acc": 0.91191,
+    "mean_test_sens_q_rate": 0.014775390624999999,
+    "min_test_sens_q_rate": 0.01220703125,
+    "min_sens_epoch": 9,
+    "test_acc": 0.9157,
+    "test_sens_q_rate": 0.01220703125,
+    "test_sens_loss": 0.6572803601622581,
+    "epoch": 9
+  },
+  {
+    "name": "lam_0.30",
+    "lambda_adv": 0.3,
+    "alpha_sens": 0.0,
+    "mean_test_acc": 0.91189,
+    "mean_test_sens_q_rate": 0.014560546875,
+    "min_test_sens_q_rate": 0.0119140625,
+    "min_sens_epoch": 9,
+    "test_acc": 0.9138,
+    "test_sens_q_rate": 0.0119140625,
+    "test_sens_loss": 0.6572197183966637,
+    "epoch": 9
+  },
+  {
+    "name": "lam_0.40",
+    "lambda_adv": 0.4,
+    "alpha_sens": 0.0,
+    "mean_test_acc": 0.91211,
+    "mean_test_sens_q_rate": 0.014365234374999999,
+    "min_test_sens_q_rate": 0.011328125,
+    "min_sens_epoch": 10,
+    "test_acc": 0.9148,
+    "test_sens_q_rate": 0.011328125,
+    "test_sens_loss": 0.6569475859403611,
+    "epoch": 10
+  },
+  {
+    "name": "lam_0.60",
+    "lambda_adv": 0.6,
+    "alpha_sens": 0.0,
+    "mean_test_acc": 0.9123699999999999,
+    "mean_test_sens_q_rate": 0.014013671875000003,
+    "min_test_sens_q_rate": 0.01064453125,
+    "min_sens_epoch": 10,
+    "test_acc": 0.9147,
+    "test_sens_q_rate": 0.01123046875,
+    "test_sens_loss": 0.6572698727250099,
+    "epoch": 9
+  }
+]
