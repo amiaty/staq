@@ -3,3 +3,5 @@ reference_resources/
 __pycache__/
 *.pyc
 *.egg-info/
+.DS_Store
+**/.DS_Store
