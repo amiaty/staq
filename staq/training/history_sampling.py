@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import torch
 
 
-@dataclass(slots=True)
+@dataclass
 class HistorySamplingConfig:
     min_history: int = 1
     max_history: int = 2

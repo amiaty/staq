@@ -16,7 +16,7 @@ def detect_device(allow_mps: bool = False) -> torch.device:
     return torch.device("cpu")
 
 
-@dataclass(slots=True)
+@dataclass
 class PathsConfig:
     repo_root: Path
     data_root: Path
@@ -86,7 +86,7 @@ def default_paths(repo_root: str | Path | None = None) -> PathsConfig:
     )
 
 
-@dataclass(slots=True)
+@dataclass
 class Cifar10StaqConfig:
     dataset_name: str = "cifar10"
     clip_model_name: str = "ViT-B/16"
