@@ -23,7 +23,7 @@ from staq.core import (
 )
 from staq.data import get_cifar10_loaders
 from staq.sensitive_labels import build_sensitive_index
-from staq.training import HistorySamplingConfig, build_fair_vip_models, fit_fair_vip, seed_everything
+from staq.training import HistorySamplingConfig, build_staq_models, fit_staq, seed_everything
 
 
 def main():
@@ -88,7 +88,7 @@ def main():
     if classifier_checkpoint is None and paths.bootstrap_classifier_checkpoint.exists():
         classifier_checkpoint = str(paths.bootstrap_classifier_checkpoint)
 
-    actor, classifier, s_head = build_fair_vip_models(
+    actor, classifier, s_head = build_staq_models(
         max_queries=config.max_queries,
         num_classes=config.num_classes,
         device=device,
@@ -106,7 +106,7 @@ def main():
         non_sensitive_only=config.non_sensitive_history_only,
     )
 
-    history, best = fit_fair_vip(
+    history, best = fit_staq(
         actor=actor,
         classifier=classifier,
         s_head=s_head,

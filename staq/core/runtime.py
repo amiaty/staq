@@ -9,6 +9,29 @@ from staq.core.clip_features import build_concept_qa_inputs, encode_images
 
 
 @torch.no_grad()
+def concept_answers_from_image_features(
+    image_features: torch.Tensor,
+    dictionary: torch.Tensor,
+    answering_model,
+    train_device: torch.device,
+    threshold: float = 0.0,
+    qa_chunk: int = 4096,
+) -> torch.Tensor:
+    inputs = build_concept_qa_inputs(image_features=image_features, dictionary=dictionary)
+    inputs = inputs.to(next(answering_model.parameters()).device).float()
+
+    flat_logits = []
+    for start in range(0, inputs.size(0), qa_chunk):
+        flat_logits.append(answering_model(inputs[start : start + qa_chunk]))
+
+    batch_size = image_features.size(0)
+    num_queries = dictionary.size(1)
+    logits = torch.cat(flat_logits, dim=0).view(batch_size, num_queries)
+    answers = torch.where(logits > threshold, torch.ones_like(logits), -torch.ones_like(logits))
+    return answers.to(train_device)
+
+
+@torch.no_grad()
 def concept_answers_batch(
     images: torch.Tensor,
     model_clip,
@@ -20,17 +43,14 @@ def concept_answers_batch(
     qa_chunk: int = 4096,
 ) -> torch.Tensor:
     image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
-    inputs = build_concept_qa_inputs(image_features=image_features, dictionary=dictionary)
-    inputs = inputs.to(next(answering_model.parameters()).device).float()
-
-    flat_logits = []
-    for start in range(0, inputs.size(0), qa_chunk):
-        flat_logits.append(answering_model(inputs[start : start + qa_chunk]))
-
-    num_queries = dictionary.size(1)
-    logits = torch.cat(flat_logits, dim=0).view(images.size(0), num_queries)
-    answers = torch.where(logits > threshold, torch.ones_like(logits), -torch.ones_like(logits))
-    return answers.to(train_device)
+    return concept_answers_from_image_features(
+        image_features=image_features,
+        dictionary=dictionary,
+        answering_model=answering_model,
+        train_device=train_device,
+        threshold=threshold,
+        qa_chunk=qa_chunk,
+    )
 
 
 def make_sensitive_mask(num_queries: int, sensitive_indices: torch.Tensor, device: torch.device) -> torch.Tensor:

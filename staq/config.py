@@ -98,9 +98,9 @@ class Cifar10StaqConfig:
     sensitive_tau: float = 0.7
     sensitive_topk: int = 3
     actor_eps: float = 1.0
-    batch_size_cuda: int = 256
+    batch_size_cuda: int = 64
     batch_size_cpu: int = 64
-    num_workers_cuda: int = 4
+    num_workers_cuda: int = 0
     num_workers_cpu: int = 0
     default_train_epochs: int = 10
     learning_rate: float = 1e-4

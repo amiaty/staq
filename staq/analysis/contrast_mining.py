@@ -38,7 +38,7 @@ def _build_record(
     init_history_idx: list[int],
     answers_row: torch.Tensor,
     baseline_stop: dict,
-    fair_stop: dict,
+    staq_stop: dict,
     concepts: list[str],
 ) -> dict:
     return {
@@ -49,22 +49,22 @@ def _build_record(
         "initial_history": format_history(init_history_idx, answers_row, concepts, max_items=max(1, len(init_history_idx))),
         "initial_history_size": int(len(init_history_idx)),
         "baseline": baseline_stop,
-        "fair": fair_stop,
+        "staq": staq_stop,
         "baseline_correct": bool(baseline_stop["final_pred_idx"] == label_idx),
-        "fair_correct": bool(fair_stop["final_pred_idx"] == label_idx),
+        "staq_correct": bool(staq_stop["final_pred_idx"] == label_idx),
         "both_correct": bool(
-            (baseline_stop["final_pred_idx"] == label_idx) and (fair_stop["final_pred_idx"] == label_idx)
+            (baseline_stop["final_pred_idx"] == label_idx) and (staq_stop["final_pred_idx"] == label_idx)
         ),
-        "sensitive_gap": int(baseline_stop["sensitive_steps"] - fair_stop["sensitive_steps"]),
-        "delay_gap": int(_late_sensitive_step(fair_stop, 999) - _late_sensitive_step(baseline_stop, 999)),
-        "first_divergence_step": first_divergence_step(baseline_stop["sequence"], fair_stop["sequence"]),
+        "sensitive_gap": int(baseline_stop["sensitive_steps"] - staq_stop["sensitive_steps"]),
+        "delay_gap": int(_late_sensitive_step(staq_stop, 999) - _late_sensitive_step(baseline_stop, 999)),
+        "first_divergence_step": first_divergence_step(baseline_stop["sequence"], staq_stop["sequence"]),
     }
 
 
 def _record_sort_key(row: dict):
     return (
         row["both_correct"],
-        row["fair"]["sensitive_steps"] == 0,
+        row["staq"]["sensitive_steps"] == 0,
         row["sensitive_gap"],
         row["delay_gap"],
         row["baseline"]["sensitive_steps"],
@@ -76,7 +76,7 @@ def sample_intuition_replays(
     dataset,
     answer_builder,
     baseline_bundle: dict,
-    fair_bundle: dict,
+    staq_bundle: dict,
     concepts: list[str],
     sensitive_mask: torch.Tensor,
     class_names: list[str],
@@ -120,15 +120,15 @@ def sample_intuition_replays(
                     sensitive_mask=sensitive_mask,
                     class_names=class_names,
                 )
-                fair_stop = rollout_until_confidence(
-                    bundle=fair_bundle,
+                staq_stop = rollout_until_confidence(
+                    bundle=staq_bundle,
                     answers_row=answers_row,
                     init_mask=init_mask,
                     concepts=concepts,
                     sensitive_mask=sensitive_mask,
                     class_names=class_names,
                 )
-                if require_nontrivial and baseline_stop["queries_asked"] == 0 and fair_stop["queries_asked"] == 0:
+                if require_nontrivial and baseline_stop["queries_asked"] == 0 and staq_stop["queries_asked"] == 0:
                     continue
                 records.append(
                     _build_record(
@@ -139,7 +139,7 @@ def sample_intuition_replays(
                         init_history_idx=init_history_idx,
                         answers_row=answers_row,
                         baseline_stop=baseline_stop,
-                        fair_stop=fair_stop,
+                        staq_stop=staq_stop,
                         concepts=concepts,
                     )
                 )
@@ -149,9 +149,9 @@ def sample_intuition_replays(
         return (
             1 if (prefer_divergent and divergence is not None) else 0,
             1 if row["both_correct"] else 0,
-            abs(row["baseline"]["queries_asked"] - row["fair"]["queries_asked"]),
+            abs(row["baseline"]["queries_asked"] - row["staq"]["queries_asked"]),
             abs(row["sensitive_gap"]),
-            max(row["baseline"]["queries_asked"], row["fair"]["queries_asked"]),
+            max(row["baseline"]["queries_asked"], row["staq"]["queries_asked"]),
             -(divergence if divergence is not None else 999),
         )
 
@@ -172,7 +172,7 @@ def mine_confidence_stop_contrasts(
     loader,
     answer_builder,
     baseline_bundle: dict,
-    fair_bundle: dict,
+    staq_bundle: dict,
     concepts: list[str],
     sensitive_mask: torch.Tensor,
     class_names: list[str],
@@ -192,10 +192,10 @@ def mine_confidence_stop_contrasts(
         "tested_states": 0,
         "both_stop_immediately": 0,
         "baseline_any_sensitive": 0,
-        "fair_any_sensitive": 0,
+        "staq_any_sensitive": 0,
         "gap_positive": 0,
         "both_correct_gap_positive": 0,
-        "strict_zero_sensitive_fair": 0,
+        "strict_zero_sensitive_staq": 0,
         "delay_positive": 0,
         "both_correct_delay_positive": 0,
         "baseline_sensitive_both_correct": 0,
@@ -243,8 +243,8 @@ def mine_confidence_stop_contrasts(
                         threshold=threshold,
                         max_steps=max_steps,
                     )
-                    fair_stop = rollout_until_confidence(
-                        bundle=fair_bundle,
+                    staq_stop = rollout_until_confidence(
+                        bundle=staq_bundle,
                         answers_row=answers_row,
                         init_mask=init_mask,
                         concepts=concepts,
@@ -255,24 +255,24 @@ def mine_confidence_stop_contrasts(
                     )
 
                     baseline_correct = baseline_stop["final_pred_idx"] == label_idx
-                    fair_correct = fair_stop["final_pred_idx"] == label_idx
-                    both_correct = baseline_correct and fair_correct
-                    sensitive_gap = int(baseline_stop["sensitive_steps"] - fair_stop["sensitive_steps"])
-                    delay_gap = int(_late_sensitive_step(fair_stop, max_steps) - _late_sensitive_step(baseline_stop, max_steps))
+                    staq_correct = staq_stop["final_pred_idx"] == label_idx
+                    both_correct = baseline_correct and staq_correct
+                    sensitive_gap = int(baseline_stop["sensitive_steps"] - staq_stop["sensitive_steps"])
+                    delay_gap = int(_late_sensitive_step(staq_stop, max_steps) - _late_sensitive_step(baseline_stop, max_steps))
 
                     stats["tested_states"] += 1
-                    if baseline_stop["queries_asked"] == 0 and fair_stop["queries_asked"] == 0:
+                    if baseline_stop["queries_asked"] == 0 and staq_stop["queries_asked"] == 0:
                         stats["both_stop_immediately"] += 1
                     if baseline_stop["sensitive_steps"] > 0:
                         stats["baseline_any_sensitive"] += 1
-                    if fair_stop["sensitive_steps"] > 0:
-                        stats["fair_any_sensitive"] += 1
+                    if staq_stop["sensitive_steps"] > 0:
+                        stats["staq_any_sensitive"] += 1
                     if sensitive_gap > 0:
                         stats["gap_positive"] += 1
                     if sensitive_gap > 0 and both_correct:
                         stats["both_correct_gap_positive"] += 1
-                    if sensitive_gap > 0 and both_correct and fair_stop["sensitive_steps"] == 0:
-                        stats["strict_zero_sensitive_fair"] += 1
+                    if sensitive_gap > 0 and both_correct and staq_stop["sensitive_steps"] == 0:
+                        stats["strict_zero_sensitive_staq"] += 1
                     if baseline_stop["sensitive_steps"] > 0 and delay_gap > 0:
                         stats["delay_positive"] += 1
                     if baseline_stop["sensitive_steps"] > 0 and delay_gap > 0 and both_correct:
@@ -288,7 +288,7 @@ def mine_confidence_stop_contrasts(
                         init_history_idx=init_history_idx,
                         answers_row=answers_row,
                         baseline_stop=baseline_stop,
-                        fair_stop=fair_stop,
+                        staq_stop=staq_stop,
                         concepts=concepts,
                     )
                     record["delay_gap"] = delay_gap
@@ -306,13 +306,13 @@ def mine_confidence_stop_contrasts(
     delay_candidates = sorted(delay_candidates, key=_record_sort_key, reverse=True)
     baseline_sensitive_examples = sorted(baseline_sensitive_examples, key=_record_sort_key, reverse=True)
 
-    strict_zero_sensitive = [row for row in strict_candidates if row["both_correct"] and row["fair"]["sensitive_steps"] == 0]
+    strict_zero_sensitive = [row for row in strict_candidates if row["both_correct"] and row["staq"]["sensitive_steps"] == 0]
     both_correct_gap = [row for row in strict_candidates if row["both_correct"]]
     both_correct_delay = [row for row in delay_candidates if row["both_correct"]]
     baseline_sensitive_both_correct = [row for row in baseline_sensitive_examples if row["both_correct"]]
 
     bucket_map = {
-        "strict_zero_sensitive_fair": strict_zero_sensitive,
+        "strict_zero_sensitive_staq": strict_zero_sensitive,
         "both_correct_gap_positive": both_correct_gap,
         "all_gap_positive": strict_candidates,
         "both_correct_delay_positive": both_correct_delay,
@@ -322,7 +322,7 @@ def mine_confidence_stop_contrasts(
     }
     bucket_counts = {name: len(rows) for name, rows in bucket_map.items()}
     selection_priority = [
-        "strict_zero_sensitive_fair",
+        "strict_zero_sensitive_staq",
         "both_correct_gap_positive",
         "all_gap_positive",
         "both_correct_delay_positive",
@@ -331,7 +331,7 @@ def mine_confidence_stop_contrasts(
         "all_baseline_sensitive",
     ]
     plot_priority = [
-        "strict_zero_sensitive_fair",
+        "strict_zero_sensitive_staq",
         "both_correct_gap_positive",
         "all_gap_positive",
         "both_correct_delay_positive",

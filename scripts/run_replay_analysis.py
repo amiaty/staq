@@ -32,7 +32,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--concept-qa-checkpoint", type=str, default=None)
     parser.add_argument("--baseline-checkpoint", type=str, default=None)
-    parser.add_argument("--fair-checkpoint", type=str, default=None)
+    parser.add_argument("--staq-checkpoint", type=str, default=None)
     parser.add_argument("--mode", choices=["intuition", "contrast"], default="intuition")
     parser.add_argument("--min-history", type=int, default=1)
     parser.add_argument("--max-history", type=int, default=2)
@@ -64,9 +64,9 @@ def main():
     answering_model = load_concept_qa_checkpoint(qa_checkpoint, device=device)
 
     baseline_checkpoint = args.baseline_checkpoint or str(paths.checkpoints_root / "baseline_vip_best.pt")
-    fair_checkpoint = args.fair_checkpoint or str(paths.checkpoints_root / "lam_0.60_best.pt")
+    staq_checkpoint = args.staq_checkpoint or str(paths.checkpoints_root / "lam_0.60_best.pt")
     baseline_bundle = load_vip_bundle(baseline_checkpoint, device=device, max_queries=config.max_queries, num_classes=config.num_classes)
-    fair_bundle = load_vip_bundle(fair_checkpoint, device=device, max_queries=config.max_queries, num_classes=config.num_classes)
+    staq_bundle = load_vip_bundle(staq_checkpoint, device=device, max_queries=config.max_queries, num_classes=config.num_classes)
 
     class_names = get_raw_cifar10_dataset(paths.data_root, train=False).classes
     raw_test_ds = get_raw_cifar10_dataset(paths.data_root, train=False)
@@ -88,7 +88,7 @@ def main():
             dataset=test_ds,
             answer_builder=answer_builder,
             baseline_bundle=baseline_bundle,
-            fair_bundle=fair_bundle,
+            staq_bundle=staq_bundle,
             concepts=concepts,
             sensitive_mask=sensitive_mask,
             class_names=class_names,
@@ -111,7 +111,7 @@ def main():
             loader=test_loader,
             answer_builder=answer_builder,
             baseline_bundle=baseline_bundle,
-            fair_bundle=fair_bundle,
+            staq_bundle=staq_bundle,
             concepts=concepts,
             sensitive_mask=sensitive_mask,
             class_names=class_names,

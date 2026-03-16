@@ -30,6 +30,27 @@ def build_sensitive_index(concepts: list[str], patterns: list[str] | None = None
 
 
 @torch.no_grad()
+def compute_s_from_image_features(
+    image_features: torch.Tensor,
+    logit_scale,
+    dictionary: torch.Tensor,
+    sens_idx: torch.Tensor,
+    tau: float = 0.7,
+    topk: int = 3,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    sims = compute_similarity_scores(
+        image_features=image_features,
+        dictionary=dictionary,
+        logit_scale=logit_scale,
+    )
+    sens_scores = sims[:, sens_idx.to(sims.device)]
+    k = min(topk, sens_scores.size(1))
+    s_soft = sens_scores.topk(k=k, dim=1).values.mean(dim=1)
+    s_hard = (s_soft >= tau).float()
+    return s_soft, s_hard
+
+
+@torch.no_grad()
 def compute_s_batch(
     images: torch.Tensor,
     model_clip,
@@ -39,17 +60,15 @@ def compute_s_batch(
     tau: float = 0.7,
     topk: int = 3,
 ) -> tuple[torch.Tensor, torch.Tensor]:
-    feats = encode_images(model_clip=model_clip, images=images, device=clip_device)
-    sims = compute_similarity_scores(
-        image_features=feats,
-        dictionary=dictionary,
+    image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
+    return compute_s_from_image_features(
+        image_features=image_features,
         logit_scale=model_clip.logit_scale.exp(),
+        dictionary=dictionary,
+        sens_idx=sens_idx,
+        tau=tau,
+        topk=topk,
     )
-    sens_scores = sims[:, sens_idx.to(sims.device)]
-    k = min(topk, sens_scores.size(1))
-    s_soft = sens_scores.topk(k=k, dim=1).values.mean(dim=1)
-    s_hard = (s_soft >= tau).float()
-    return s_soft, s_hard
 
 
 def build_sensitive_labels(

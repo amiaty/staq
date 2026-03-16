@@ -84,7 +84,7 @@ def plot_rollout_comparisons(
     if len(records) == 1:
         axes = np.array([axes])
 
-    for (ax_img, ax_base, ax_fair), row in zip(axes, records):
+    for (ax_img, ax_base, ax_staq), row in zip(axes, records):
         image, _ = raw_dataset[row["sample_idx"]]
         ax_img.imshow(image)
         ax_img.axis("off")
@@ -94,7 +94,7 @@ def plot_rollout_comparisons(
             fontsize=10,
         )
 
-        for ax in (ax_base, ax_fair):
+        for ax in (ax_base, ax_staq):
             ax.axis("off")
 
         start_text = ", ".join(row["initial_history"]) if row["initial_history"] else "(empty)"
@@ -120,10 +120,10 @@ def plot_rollout_comparisons(
             family="monospace",
             bbox=dict(boxstyle="round,pad=0.45", facecolor="#fff5f5", edgecolor="crimson", alpha=0.95),
         )
-        ax_fair.text(
+        ax_staq.text(
             0.0,
             1.0,
-            _wrap_block("lam_0.60", row, "fair"),
+            _wrap_block("STAQ", row, "staq"),
             fontsize=9.5,
             va="top",
             ha="left",

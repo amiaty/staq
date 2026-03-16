@@ -1,7 +1,8 @@
-"""Baseline VIP and STAQ training helpers adapted from train_vip.py and staq.ipynb."""
+"""Baseline and STAQ training helpers adapted for the STAQ repo."""
 
 from __future__ import annotations
 
+import gc
 import random
 
 import numpy as np
@@ -9,9 +10,10 @@ import torch
 import torch.nn as nn
 from tqdm.auto import tqdm
 
-from staq.core.runtime import apply_query_distribution, concept_answers_batch, make_sensitive_mask
+from staq.core.clip_features import encode_images
+from staq.core.runtime import apply_query_distribution, concept_answers_from_image_features, make_sensitive_mask
 from staq.models import Network
-from staq.sensitive_labels import compute_s_batch
+from staq.sensitive_labels import compute_s_from_image_features
 from staq.training.history_sampling import HistorySamplingConfig, sample_history_mask
 
 
@@ -35,7 +37,7 @@ def seed_everything(seed: int) -> None:
         torch.cuda.manual_seed_all(seed)
 
 
-def build_fair_vip_models(
+def build_staq_models(
     max_queries: int,
     num_classes: int,
     device: torch.device,
@@ -55,7 +57,7 @@ def build_fair_vip_models(
     return actor, classifier, s_head
 
 
-def run_fair_vip_epoch(
+def run_staq_epoch(
     loader,
     actor,
     classifier,
@@ -100,37 +102,40 @@ def run_fair_vip_epoch(
     sum_actor_grad = 0.0
     n_batches = 0
 
-    iterator = tqdm(loader, desc="STAQ train" if train else "STAQ eval", leave=False)
-    for batch_index, (images, labels) in enumerate(iterator):
+    for batch_index, (images, labels) in enumerate(loader):
         if max_batches is not None and batch_index >= max_batches:
             break
 
-        with torch.set_grad_enabled(train):
-            s_soft, _ = compute_s_batch(
-                images=images,
-                model_clip=model_clip,
+        with torch.no_grad():
+            image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
+            s_soft, _ = compute_s_from_image_features(
+                image_features=image_features,
+                logit_scale=model_clip.logit_scale.exp(),
                 dictionary=dictionary,
                 sens_idx=sens_idx,
-                clip_device=clip_device,
                 tau=sensitive_tau,
                 topk=sensitive_topk,
             )
-            answers = concept_answers_batch(
-                images=images,
-                model_clip=model_clip,
+            answers = concept_answers_from_image_features(
+                image_features=image_features,
                 dictionary=dictionary,
                 answering_model=answering_model,
-                clip_device=clip_device,
                 train_device=train_device,
                 threshold=threshold_for_binarization,
             )
+
+        with torch.set_grad_enabled(train):
             mask, masked_answers = sample_history_mask(
                 answers=answers,
                 config=history_config,
                 sensitive_indices=sens_idx,
             )
             query_distribution = actor(masked_answers, mask)
-            updated_answers = apply_query_distribution(masked_answers=masked_answers, answers=answers, query_distribution=query_distribution)
+            updated_answers = apply_query_distribution(
+                masked_answers=masked_answers,
+                answers=answers,
+                query_distribution=query_distribution,
+            )
 
             labels = labels.to(train_device)
             logits_cls = classifier(updated_answers)
@@ -180,7 +185,7 @@ def run_fair_vip_epoch(
     return metrics
 
 
-def fit_fair_vip(
+def fit_staq(
     actor,
     classifier,
     s_head,
@@ -206,9 +211,10 @@ def fit_fair_vip(
 ):
     history = []
     best = {"test_acc": -1.0}
+    epoch_bar = tqdm(range(1, num_epochs + 1), desc="STAQ epochs")
 
-    for epoch in tqdm(range(1, num_epochs + 1), desc="VIP epochs"):
-        train_metrics = run_fair_vip_epoch(
+    for epoch in epoch_bar:
+        train_metrics = run_staq_epoch(
             loader=train_loader,
             actor=actor,
             classifier=classifier,
@@ -229,7 +235,7 @@ def fit_fair_vip(
             train=True,
             max_batches=max_train_batches,
         )
-        test_metrics = run_fair_vip_epoch(
+        test_metrics = run_staq_epoch(
             loader=test_loader,
             actor=actor,
             classifier=classifier,
@@ -284,5 +290,15 @@ def fit_fair_vip(
                 "s_head_state_dict": {k: v.detach().cpu() for k, v in s_head.state_dict().items()},
                 "history_row": row,
             }
+
+        epoch_bar.set_postfix(
+            train_acc=f"{train_metrics['acc']:.3f}",
+            test_acc=f"{test_metrics['acc']:.3f}",
+            test_sens=f"{test_metrics['sens_q_rate']:.3f}",
+        )
+
+        gc.collect()
+        if train_device.type == "cuda":
+            torch.cuda.empty_cache()
 
     return history, best
