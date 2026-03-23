@@ -1,18 +1,18 @@
 {
   "stats": {
-    "tested_states": 1600,
-    "both_stop_immediately": 20,
+    "tested_states": 6400,
+    "both_stop_immediately": 99,
     "baseline_any_sensitive": 0,
-    "fair_any_sensitive": 0,
+    "staq_any_sensitive": 0,
     "gap_positive": 0,
     "both_correct_gap_positive": 0,
-    "strict_zero_sensitive_fair": 0,
+    "strict_zero_sensitive_staq": 0,
     "delay_positive": 0,
     "both_correct_delay_positive": 0,
     "baseline_sensitive_both_correct": 0
   },
   "bucket_counts": {
-    "strict_zero_sensitive_fair": 0,
+    "strict_zero_sensitive_staq": 0,
     "both_correct_gap_positive": 0,
     "all_gap_positive": 0,
     "both_correct_delay_positive": 0,
@@ -20,6 +20,28 @@
     "both_correct_baseline_sensitive": 0,
     "all_baseline_sensitive": 0
   },
+  "search_plan": [
+    {
+      "history_mode": "non_sensitive",
+      "min_history": 0,
+      "max_history": 1
+    },
+    {
+      "history_mode": "non_sensitive",
+      "min_history": 1,
+      "max_history": 2
+    },
+    {
+      "history_mode": "random",
+      "min_history": 0,
+      "max_history": 1
+    },
+    {
+      "history_mode": "random",
+      "min_history": 1,
+      "max_history": 2
+    }
+  ],
   "selected_bucket": "none",
   "plot_bucket": "none",
   "selected_candidates": []

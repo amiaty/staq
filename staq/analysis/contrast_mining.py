@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import numpy as np
 import torch
 from tqdm.auto import tqdm
@@ -72,6 +70,39 @@ def _record_sort_key(row: dict):
     )
 
 
+def _dedupe_by_sample(rows: list[dict]) -> list[dict]:
+    selected = []
+    seen = set()
+    for row in rows:
+        if row["sample_idx"] in seen:
+            continue
+        selected.append(row)
+        seen.add(row["sample_idx"])
+    return selected
+
+
+def build_tiny_search_plan(search_preset: str = "tiny_auto") -> list[tuple[str, int, int]]:
+    presets = {
+        "tiny_auto": [
+            ("non_sensitive", 0, 1),
+            ("non_sensitive", 1, 2),
+            ("random", 0, 1),
+            ("random", 1, 2),
+        ],
+        "non_sensitive_tiny": [
+            ("non_sensitive", 0, 1),
+            ("non_sensitive", 1, 2),
+        ],
+        "random_tiny": [
+            ("random", 0, 1),
+            ("random", 1, 2),
+        ],
+    }
+    if search_preset not in presets:
+        raise ValueError(f"Unknown search preset: {search_preset}")
+    return presets[search_preset]
+
+
 def sample_intuition_replays(
     dataset,
     answer_builder,
@@ -86,9 +117,10 @@ def sample_intuition_replays(
     random_seed: int = 0,
     min_history: int = 1,
     max_history: int = 2,
-    history_mode: str = "random",
+    history_mode: str = "non_sensitive",
     require_nontrivial: bool = True,
     prefer_divergent: bool = True,
+    prefer_baseline_sensitive: bool = True,
 ) -> list[dict]:
     rng = np.random.default_rng(random_seed)
     sample_indices = rng.permutation(len(dataset))[: min(pool_size, len(dataset))]
@@ -146,19 +178,36 @@ def sample_intuition_replays(
 
     def _intuition_sort_key(row: dict):
         divergence = row["first_divergence_step"]
+        baseline_sensitive = row["baseline"]["sensitive_steps"] > 0
+        staq_avoids_sensitive = row["baseline"]["sensitive_steps"] > row["staq"]["sensitive_steps"]
         return (
-            1 if (prefer_divergent and divergence is not None) else 0,
+            1 if (prefer_baseline_sensitive and baseline_sensitive) else 0,
+            1 if staq_avoids_sensitive else 0,
             1 if row["both_correct"] else 0,
+            1 if (prefer_divergent and divergence is not None) else 0,
             abs(row["baseline"]["queries_asked"] - row["staq"]["queries_asked"]),
             abs(row["sensitive_gap"]),
+            row["baseline"]["sensitive_steps"],
             max(row["baseline"]["queries_asked"], row["staq"]["queries_asked"]),
             -(divergence if divergence is not None else 999),
         )
 
-    records = sorted(records, key=_intuition_sort_key, reverse=True)
+    baseline_sensitive_gap = [
+        row for row in records if row["baseline"]["sensitive_steps"] > 0 and row["sensitive_gap"] > 0
+    ]
+    baseline_sensitive_records = [row for row in records if row["baseline"]["sensitive_steps"] > 0]
+
+    if prefer_baseline_sensitive and baseline_sensitive_gap:
+        candidate_pool = baseline_sensitive_gap
+    elif prefer_baseline_sensitive and baseline_sensitive_records:
+        candidate_pool = baseline_sensitive_records
+    else:
+        candidate_pool = records
+
+    candidate_pool = sorted(candidate_pool, key=_intuition_sort_key, reverse=True)
     selected = []
     seen = set()
-    for row in records:
+    for row in candidate_pool:
         if row["sample_idx"] in seen:
             continue
         selected.append(row)
@@ -169,7 +218,6 @@ def sample_intuition_replays(
 
 
 def mine_confidence_stop_contrasts(
-    loader,
     answer_builder,
     baseline_bundle: dict,
     staq_bundle: dict,
@@ -178,12 +226,13 @@ def mine_confidence_stop_contrasts(
     class_names: list[str],
     threshold: float,
     max_steps: int,
-    min_history: int = 1,
-    max_history: int = 2,
-    history_mode: str = "random",
+    *,
+    dataset=None,
+    search_preset: str = "tiny_auto",
     max_search_samples: int | None = None,
     num_trials: int = 4,
     require_both_correct: bool = True,
+    random_seed: int = 0,
 ) -> dict:
     strict_candidates = []
     delay_candidates = []
@@ -201,36 +250,34 @@ def mine_confidence_stop_contrasts(
         "baseline_sensitive_both_correct": 0,
     }
 
-    seen = 0
+    if dataset is None:
+        raise ValueError("dataset is required for contrast mining.")
+
     sensitive_indices = (sensitive_mask > 0.5).nonzero(as_tuple=False).flatten().cpu()
+    search_plan = build_tiny_search_plan(search_preset=search_preset)
+    rng = np.random.default_rng(random_seed)
+    sample_indices = rng.permutation(len(dataset))
+    if max_search_samples is not None:
+        sample_indices = sample_indices[: min(max_search_samples, len(sample_indices))]
+    sample_stream = ((int(sample_idx),) + dataset[int(sample_idx)] for sample_idx in sample_indices)
 
-    for images, labels in tqdm(loader, desc="Mining confidence-stop contrasts"):
-        if max_search_samples is not None and seen >= max_search_samples:
-            break
-        if max_search_samples is not None:
-            remaining = max_search_samples - seen
-            if remaining <= 0:
-                break
-            if images.size(0) > remaining:
-                images = images[:remaining]
-                labels = labels[:remaining]
-
+    def evaluate_single_sample(sample_idx: int, image, label_idx: int):
         with torch.no_grad():
-            answers_batch = answer_builder(images)
-            for row_idx in range(answers_batch.size(0)):
-                sample_idx = seen + row_idx
-                label_idx = int(labels[row_idx].item())
-                label_name = class_names[label_idx]
-                answers_row = answers_batch[row_idx]
+            answers = answer_builder(image.unsqueeze(0))
+            answers_row = answers[0]
+            label_idx = int(label_idx)
+            label_name = class_names[label_idx]
 
-                for trial in range(num_trials):
+            for trial in range(num_trials):
+                for search_idx, (search_mode, search_min_history, search_max_history) in enumerate(search_plan):
+                    effective_trial = trial + search_idx * max(num_trials, 1)
                     init_mask, _, init_history_idx = build_random_initial_history(
-                        answers=answers_row.unsqueeze(0),
+                        answers=answers,
                         sample_idx=sample_idx,
-                        trial=trial,
-                        min_history=min_history,
-                        max_history=max_history,
-                        mode=history_mode,
+                        trial=effective_trial,
+                        min_history=search_min_history,
+                        max_history=search_max_history,
+                        mode=search_mode,
                         sensitive_indices=sensitive_indices,
                     )
                     baseline_stop = rollout_until_confidence(
@@ -282,7 +329,7 @@ def mine_confidence_stop_contrasts(
 
                     record = _build_record(
                         sample_idx=sample_idx,
-                        trial=trial,
+                        trial=effective_trial,
                         label_idx=label_idx,
                         label_name=label_name,
                         init_history_idx=init_history_idx,
@@ -292,6 +339,8 @@ def mine_confidence_stop_contrasts(
                         concepts=concepts,
                     )
                     record["delay_gap"] = delay_gap
+                    record["history_mode"] = search_mode
+                    record["history_range"] = [search_min_history, search_max_history]
 
                     if baseline_stop["sensitive_steps"] > 0:
                         baseline_sensitive_examples.append(record)
@@ -300,11 +349,14 @@ def mine_confidence_stop_contrasts(
                     if sensitive_gap > 0 and ((not require_both_correct) or both_correct):
                         strict_candidates.append(record)
 
-        seen += images.size(0)
+    for sample_idx, image, label_idx in tqdm(sample_stream, desc="Mining confidence-stop contrasts"):
+        evaluate_single_sample(sample_idx=sample_idx, image=image, label_idx=label_idx)
 
-    strict_candidates = sorted(strict_candidates, key=_record_sort_key, reverse=True)
-    delay_candidates = sorted(delay_candidates, key=_record_sort_key, reverse=True)
-    baseline_sensitive_examples = sorted(baseline_sensitive_examples, key=_record_sort_key, reverse=True)
+    strict_candidates = _dedupe_by_sample(sorted(strict_candidates, key=_record_sort_key, reverse=True))
+    delay_candidates = _dedupe_by_sample(sorted(delay_candidates, key=_record_sort_key, reverse=True))
+    baseline_sensitive_examples = _dedupe_by_sample(
+        sorted(baseline_sensitive_examples, key=_record_sort_key, reverse=True)
+    )
 
     strict_zero_sensitive = [row for row in strict_candidates if row["both_correct"] and row["staq"]["sensitive_steps"] == 0]
     both_correct_gap = [row for row in strict_candidates if row["both_correct"]]
@@ -346,6 +398,10 @@ def mine_confidence_stop_contrasts(
         "bucket_counts": bucket_counts,
         "selected_bucket": selected_bucket,
         "plot_bucket": plot_bucket,
+        "search_plan": [
+            {"history_mode": mode, "min_history": min_h, "max_history": max_h}
+            for mode, min_h, max_h in search_plan
+        ],
         "selected_candidates": [] if selected_bucket == "none" else bucket_map[selected_bucket],
         "plot_candidates": [] if plot_bucket == "none" else bucket_map[plot_bucket],
     }

@@ -7,8 +7,6 @@ import json
 from pathlib import Path
 import sys
 
-from torch.utils.data import DataLoader
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -25,7 +23,7 @@ from staq.core import (
     make_sensitive_mask,
 )
 from staq.data import get_cifar10_datasets, get_raw_cifar10_dataset
-from staq.sensitive_labels import build_sensitive_index
+from staq.sensitive_labels import build_cifar10_sensitive_match
 
 
 def main():
@@ -51,7 +49,7 @@ def main():
     model_clip, preprocess = load_clip_model(config.clip_model_name, device=device)
     concepts = load_concepts(paths.concept_file)
     dictionary = build_concept_dictionary(model_clip=model_clip, concepts=concepts, device=device)
-    sens_idx = build_sensitive_index(concepts)
+    sens_idx = build_cifar10_sensitive_match(concepts).indices
     sensitive_mask = make_sensitive_mask(config.max_queries, sens_idx, device)
 
     qa_checkpoint = args.concept_qa_checkpoint
@@ -106,9 +104,8 @@ def main():
             title_prefix="tiny-start replay",
         )
     else:
-        test_loader = DataLoader(test_ds, batch_size=config.batch_size, shuffle=False, num_workers=config.num_workers)
         result = mine_confidence_stop_contrasts(
-            loader=test_loader,
+            dataset=test_ds,
             answer_builder=answer_builder,
             baseline_bundle=baseline_bundle,
             staq_bundle=staq_bundle,
@@ -117,8 +114,7 @@ def main():
             class_names=class_names,
             threshold=config.confidence_threshold,
             max_steps=config.confidence_max_steps,
-            min_history=args.min_history,
-            max_history=args.max_history,
+            search_preset="tiny_auto",
             max_search_samples=args.max_search_samples,
             num_trials=args.num_trials,
         )
@@ -140,6 +136,7 @@ def main():
             "mode": "contrast",
             "stats": result["stats"],
             "bucket_counts": result["bucket_counts"],
+            "search_plan": result["search_plan"],
             "selected_bucket": result["selected_bucket"],
             "plot_bucket": result["plot_bucket"],
             "selected_candidates": result["selected_candidates"],

@@ -41,11 +41,12 @@ def plot_training_curves(history_by_run: dict[str, list[dict]], output_path: str
 
 def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items: int = 6, conf_items: int = 8) -> str:
     stop = row[key]
+    first_sensitive = "none" if stop["first_sensitive_step"] is None else str(stop["first_sensitive_step"])
     lines = [
         label,
         (
             f"q={stop['queries_asked']} | sens={stop['sensitive_steps']} | "
-            f"first S={stop['first_sensitive_step']} | stop={stop['final_confidence']:.2f} | "
+            f"first sensitive={first_sensitive} | stop={stop['final_confidence']:.2f} | "
             f"pred={stop['final_pred_name']}"
         ),
         textwrap.fill(

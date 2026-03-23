@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -9,24 +10,57 @@ import torch
 
 from staq.core.clip_features import compute_similarity_scores, encode_images
 
-DEFAULT_SENSITIVE_PATTERNS = [
-    "person",
-    "human",
-    "rider",
-    "driver",
-    "passenger",
-    "pilot",
-    "copilot",
-    "flight attendant",
+CIFAR10_SENSITIVE_CONCEPTS = [
+    "a bridle",
+    "a cab for the driver",
+    "a captain",
+    "a collar",
+    "a copilot",
+    "a dashboard",
+    "a driver",
+    "a flight attendant",
+    "a gear shift",
+    "a halter",
+    "a hitch",
+    "a lead rope",
+    "a leash",
+    "a passenger",
+    "a pedal",
+    "a pilot",
+    "a reins",
+    "a rider",
+    "a rifle",
+    "a saddle",
+    "a seatbelt",
+    "a steering wheel",
+    "a trailer",
 ]
 
 
-def build_sensitive_index(concepts: list[str], patterns: list[str] | None = None) -> torch.Tensor:
-    patterns = DEFAULT_SENSITIVE_PATTERNS if patterns is None else patterns
+@dataclass
+class SensitiveConceptMatch:
+    indices: torch.Tensor
+    matched: list[str]
+    missing: list[str]
+
+
+def build_sensitive_index_from_patterns(concepts: list[str], patterns: list[str]) -> torch.Tensor:
     return torch.tensor(
         [idx for idx, concept in enumerate(concepts) if any(pattern in concept.lower() for pattern in patterns)],
         dtype=torch.long,
     )
+
+
+def match_exact_sensitive_concepts(concepts: list[str], selected_concepts: list[str]) -> SensitiveConceptMatch:
+    lookup = {concept.lower(): idx for idx, concept in enumerate(concepts)}
+    matched = [concept for concept in selected_concepts if concept.lower() in lookup]
+    missing = [concept for concept in selected_concepts if concept.lower() not in lookup]
+    indices = torch.tensor([lookup[concept.lower()] for concept in matched], dtype=torch.long)
+    return SensitiveConceptMatch(indices=indices, matched=matched, missing=missing)
+
+
+def build_cifar10_sensitive_match(concepts: list[str]) -> SensitiveConceptMatch:
+    return match_exact_sensitive_concepts(concepts, CIFAR10_SENSITIVE_CONCEPTS)
 
 
 @torch.no_grad()

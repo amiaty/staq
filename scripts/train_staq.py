@@ -22,7 +22,7 @@ from staq.core import (
     save_bundle_checkpoint,
 )
 from staq.data import get_cifar10_loaders
-from staq.sensitive_labels import build_sensitive_index
+from staq.sensitive_labels import build_cifar10_sensitive_match
 from staq.training import HistorySamplingConfig, build_staq_models, fit_staq, seed_everything
 
 
@@ -64,7 +64,7 @@ def main():
     model_clip, preprocess = load_clip_model(config.clip_model_name, device=device)
     concepts = load_concepts(paths.concept_file)
     dictionary = build_concept_dictionary(model_clip=model_clip, concepts=concepts, device=device)
-    sens_idx = build_sensitive_index(concepts)
+    sens_idx = build_cifar10_sensitive_match(concepts).indices
 
     batch_size = args.batch_size or config.batch_size
     train_loader, test_loader = get_cifar10_loaders(
