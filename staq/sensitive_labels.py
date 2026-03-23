@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+from tqdm.auto import tqdm
 
 from staq.core.clip_features import compute_similarity_scores, encode_images
 
@@ -113,10 +114,11 @@ def build_sensitive_labels(
     clip_device: torch.device,
     tau: float = 0.7,
     topk: int = 3,
+    desc: str = "Building sensitive labels",
 ) -> tuple[np.ndarray, np.ndarray]:
     soft_chunks = []
     hard_chunks = []
-    for images, _ in loader:
+    for images, _ in tqdm(loader, desc=desc, leave=False):
         s_soft, s_hard = compute_s_batch(
             images=images,
             model_clip=model_clip,
