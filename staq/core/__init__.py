@@ -1,5 +1,6 @@
 from .checkpoints import (
     load_concept_qa_checkpoint,
+    load_run_bundle,
     load_vip_bundle,
     save_bundle_checkpoint,
 )
@@ -30,6 +31,7 @@ __all__ = [
     "load_clip_model",
     "load_concept_qa_checkpoint",
     "load_concepts",
+    "load_run_bundle",
     "load_vip_bundle",
     "make_sensitive_mask",
     "one_actor_step",

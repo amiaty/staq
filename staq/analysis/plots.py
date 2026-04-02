@@ -39,6 +39,84 @@ def plot_training_curves(history_by_run: dict[str, list[dict]], output_path: str
     return output_path
 
 
+def summarize_hparam_sweep(history_by_run: dict[str, list[dict]], hparam_name: str = "lambda_adv") -> list[dict]:
+    summary_rows = []
+    for run_name, rows in history_by_run.items():
+        if not rows:
+            continue
+        first_row = rows[0]
+        if hparam_name not in first_row:
+            raise KeyError(f"{hparam_name} is missing from history rows for {run_name}")
+
+        best_row = max(rows, key=lambda row: row["test_acc"])
+        final_row = rows[-1]
+        summary_rows.append(
+            {
+                "run_name": run_name,
+                hparam_name: float(first_row[hparam_name]),
+                "alpha_sens": float(first_row.get("alpha_sens", 0.0)),
+                "best_epoch": int(best_row["epoch"]),
+                "best_test_acc": float(best_row["test_acc"]),
+                "test_sens_q_rate_at_best_acc": float(best_row["test_sens_q_rate"]),
+                "final_test_acc": float(final_row["test_acc"]),
+                "final_test_sens_q_rate": float(final_row["test_sens_q_rate"]),
+            }
+        )
+    return sorted(summary_rows, key=lambda row: (row[hparam_name], row["run_name"]))
+
+
+def plot_hparam_sweep_summary(
+    history_by_run: dict[str, list[dict]],
+    output_path: str | Path,
+    hparam_name: str = "lambda_adv",
+    hparam_label: str | None = None,
+) -> Path:
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_rows = summarize_hparam_sweep(history_by_run=history_by_run, hparam_name=hparam_name)
+    if not summary_rows:
+        raise ValueError("history_by_run must not be empty")
+
+    hparam_label = hparam_label or hparam_name.replace("_", " ")
+    x = [row[hparam_name] for row in summary_rows]
+    best_acc = [row["best_test_acc"] for row in summary_rows]
+    sens_at_best = [row["test_sens_q_rate_at_best_acc"] for row in summary_rows]
+
+    fig, axes = plt.subplots(1, 3, figsize=(15.5, 4.5))
+
+    axes[0].plot(x, best_acc, marker="o", linewidth=2, color="#1f77b4")
+    axes[0].set_title("Best test accuracy")
+    axes[0].set_xlabel(hparam_label)
+    axes[0].set_ylabel("Accuracy")
+    axes[0].grid(alpha=0.25)
+
+    axes[1].plot(x, sens_at_best, marker="o", linewidth=2, color="#d62728")
+    axes[1].set_title("Sensitive query rate at best accuracy")
+    axes[1].set_xlabel(hparam_label)
+    axes[1].set_ylabel("Sensitive query rate")
+    axes[1].grid(alpha=0.25)
+
+    axes[2].plot(sens_at_best, best_acc, marker="o", linewidth=1.5, color="#2e8b57")
+    axes[2].set_title("Accuracy / sensitivity trade-off")
+    axes[2].set_xlabel("Sensitive query rate at best accuracy")
+    axes[2].set_ylabel("Best test accuracy")
+    axes[2].grid(alpha=0.25)
+    for row in summary_rows:
+        axes[2].annotate(
+            f"{row[hparam_name]:.2f}",
+            (row["test_sens_q_rate_at_best_acc"], row["best_test_acc"]),
+            textcoords="offset points",
+            xytext=(0, 6),
+            ha="center",
+            fontsize=9,
+        )
+
+    plt.tight_layout()
+    fig.savefig(output_path, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    return output_path
+
+
 def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items: int = 6, conf_items: int = 8) -> str:
     stop = row[key]
     first_sensitive = "none" if stop["first_sensitive_step"] is None else str(stop["first_sensitive_step"])
@@ -68,8 +146,6 @@ def plot_rollout_comparisons(
     raw_dataset,
     output_path: str | Path,
     title_prefix: str,
-    bucket_name: str | None = None,
-    warning: str | None = None,
 ) -> Path:
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -104,10 +180,6 @@ def plot_rollout_comparisons(
             f"both correct: {row['both_correct']}",
             f"divergence step: {row['first_divergence_step']}",
         ]
-        if bucket_name is not None:
-            meta_parts.insert(0, f"bucket: {bucket_name}")
-        if warning is not None:
-            meta_parts.append(warning)
         meta_text = textwrap.fill(" | ".join(meta_parts), width=56)
 
         ax_base.text(
@@ -134,6 +206,6 @@ def plot_rollout_comparisons(
         )
 
     plt.subplots_adjust(wspace=0.10, hspace=0.42)
-    plt.savefig(output_path, dpi=200, bbox_inches="tight")
+    fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return output_path

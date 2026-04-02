@@ -60,3 +60,19 @@ def load_vip_bundle(
         "actor": actor,
         "classifier": classifier,
     }
+
+
+def load_run_bundle(
+    checkpoint_path: str | Path,
+    device: torch.device,
+    max_queries: int = 128,
+    num_classes: int = 10,
+    actor_eps: float = 1.0,
+):
+    return load_vip_bundle(
+        checkpoint_path=checkpoint_path,
+        device=device,
+        max_queries=max_queries,
+        num_classes=num_classes,
+        actor_eps=actor_eps,
+    )
