@@ -117,6 +117,72 @@ def plot_hparam_sweep_summary(
     return output_path
 
 
+def plot_fixed_history_eval_summary(
+    summary_rows: list[dict],
+    output_path: str | Path,
+    hparam_name: str = "lambda_adv",
+    hparam_label: str | None = None,
+) -> Path:
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if not summary_rows:
+        raise ValueError("summary_rows must not be empty")
+
+    hparam_label = hparam_label or hparam_name.replace("_", " ")
+    rows = sorted(
+        summary_rows,
+        key=lambda row: (float("-inf") if row[hparam_name] is None else row[hparam_name], row["run_name"]),
+    )
+    x = [row[hparam_name] for row in rows]
+    mean_acc = [row["mean_acc"] for row in rows]
+    std_acc = [row["std_acc"] for row in rows]
+    mean_sens = [row["mean_sensitive_query_rate"] for row in rows]
+    std_sens = [row["std_sensitive_query_rate"] for row in rows]
+
+    fig, axes = plt.subplots(1, 3, figsize=(16, 4.8))
+
+    axes[0].errorbar(x, mean_acc, yerr=std_acc, marker="o", linewidth=2, capsize=4, color="#1f77b4")
+    axes[0].set_title("Fixed-history accuracy")
+    axes[0].set_xlabel(hparam_label)
+    axes[0].set_ylabel("Accuracy")
+    axes[0].grid(alpha=0.25)
+
+    axes[1].errorbar(x, mean_sens, yerr=std_sens, marker="o", linewidth=2, capsize=4, color="#d62728")
+    axes[1].set_title("Fixed-history sensitive query rate")
+    axes[1].set_xlabel(hparam_label)
+    axes[1].set_ylabel("Sensitive query rate")
+    axes[1].grid(alpha=0.25)
+
+    axes[2].errorbar(
+        mean_sens,
+        mean_acc,
+        xerr=std_sens,
+        yerr=std_acc,
+        fmt="o",
+        linewidth=1.5,
+        capsize=4,
+        color="#2e8b57",
+    )
+    axes[2].set_title("Fixed-history trade-off")
+    axes[2].set_xlabel("Sensitive query rate")
+    axes[2].set_ylabel("Accuracy")
+    axes[2].grid(alpha=0.25)
+    for row in rows:
+        axes[2].annotate(
+            f"{row[hparam_name]:.2f}",
+            (row["mean_sensitive_query_rate"], row["mean_acc"]),
+            textcoords="offset points",
+            xytext=(0, 6),
+            ha="center",
+            fontsize=9,
+        )
+
+    plt.tight_layout()
+    fig.savefig(output_path, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    return output_path
+
+
 def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items: int = 6, conf_items: int = 8) -> str:
     stop = row[key]
     first_sensitive = "none" if stop["first_sensitive_step"] is None else str(stop["first_sensitive_step"])
