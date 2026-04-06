@@ -85,21 +85,21 @@ def plot_hparam_sweep_summary(
     fig, axes = plt.subplots(1, 3, figsize=(15.5, 4.5))
 
     axes[0].plot(x, best_acc, marker="o", linewidth=2, color="#1f77b4")
-    axes[0].set_title("Best test accuracy")
+    axes[0].set_title("Best-epoch test accuracy")
     axes[0].set_xlabel(hparam_label)
     axes[0].set_ylabel("Accuracy")
     axes[0].grid(alpha=0.25)
 
     axes[1].plot(x, sens_at_best, marker="o", linewidth=2, color="#d62728")
-    axes[1].set_title("Sensitive query rate at best accuracy")
+    axes[1].set_title("Sensitive query rate at best epoch")
     axes[1].set_xlabel(hparam_label)
     axes[1].set_ylabel("Sensitive query rate")
     axes[1].grid(alpha=0.25)
 
     axes[2].plot(sens_at_best, best_acc, marker="o", linewidth=1.5, color="#2e8b57")
-    axes[2].set_title("Accuracy / sensitivity trade-off")
-    axes[2].set_xlabel("Sensitive query rate at best accuracy")
-    axes[2].set_ylabel("Best test accuracy")
+    axes[2].set_title("Best-epoch accuracy / sensitivity trade-off")
+    axes[2].set_xlabel("Sensitive query rate at best epoch")
+    axes[2].set_ylabel("Best-epoch test accuracy")
     axes[2].grid(alpha=0.25)
     for row in summary_rows:
         axes[2].annotate(
