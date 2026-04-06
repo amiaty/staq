@@ -1,5 +1,6 @@
 /data/
 /reference_resources/
+.ipynb_checkpoints/
 __pycache__/
 *.pyc
 **/*.egg-info/

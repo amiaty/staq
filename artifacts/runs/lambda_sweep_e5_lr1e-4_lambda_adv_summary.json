@@ -1,0 +1,62 @@
+[
+  {
+    "run_name": "baseline",
+    "lambda_adv": 0.0,
+    "alpha_sens": 0.0,
+    "best_epoch": 5,
+    "best_test_acc": 0.3548,
+    "test_sens_q_rate_at_best_acc": 0.021220128703862428,
+    "final_test_acc": 0.3548,
+    "final_test_sens_q_rate": 0.021220128703862428
+  },
+  {
+    "run_name": "lam=0.1",
+    "lambda_adv": 0.1,
+    "alpha_sens": 0.0,
+    "best_epoch": 4,
+    "best_test_acc": 0.3602,
+    "test_sens_q_rate_at_best_acc": 0.0326976103708148,
+    "final_test_acc": 0.3481,
+    "final_test_sens_q_rate": 0.040670955926179884
+  },
+  {
+    "run_name": "lam=0.2",
+    "lambda_adv": 0.2,
+    "alpha_sens": 0.0,
+    "best_epoch": 4,
+    "best_test_acc": 0.355,
+    "test_sens_q_rate_at_best_acc": 0.024017693102359773,
+    "final_test_acc": 0.3493,
+    "final_test_sens_q_rate": 0.04068244490772486
+  },
+  {
+    "run_name": "lam=0.4",
+    "lambda_adv": 0.4,
+    "alpha_sens": 0.0,
+    "best_epoch": 2,
+    "best_test_acc": 0.3538,
+    "test_sens_q_rate_at_best_acc": 0.020720358472317457,
+    "final_test_acc": 0.3521,
+    "final_test_sens_q_rate": 0.024017693102359773
+  },
+  {
+    "run_name": "lam=0.8",
+    "lambda_adv": 0.8,
+    "alpha_sens": 0.0,
+    "best_epoch": 4,
+    "best_test_acc": 0.352,
+    "test_sens_q_rate_at_best_acc": 0.0214269301854074,
+    "final_test_acc": 0.3426,
+    "final_test_sens_q_rate": 0.03214613972231746
+  },
+  {
+    "run_name": "lam=1.0",
+    "lambda_adv": 1.0,
+    "alpha_sens": 0.0,
+    "best_epoch": 5,
+    "best_test_acc": 0.3585,
+    "test_sens_q_rate_at_best_acc": 0.029877068102359773,
+    "final_test_acc": 0.3585,
+    "final_test_sens_q_rate": 0.029877068102359773
+  }
+]
