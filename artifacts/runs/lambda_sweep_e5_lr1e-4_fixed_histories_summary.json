@@ -1,0 +1,206 @@
+[
+  {
+    "run_name": "baseline",
+    "lambda_adv": 0.0,
+    "alpha_sens": 0.0,
+    "num_samples": 10000,
+    "num_trials": 8,
+    "history_mode": "non_sensitive",
+    "history_range": [
+      1,
+      2
+    ],
+    "mean_acc": 0.35382499999999995,
+    "std_acc": 0.0036317179130543635,
+    "mean_sensitive_query_rate": 0.022275,
+    "std_sensitive_query_rate": 0.0010767427733679013,
+    "mean_confidence": 0.39536119934618474,
+    "std_confidence": 0.0018302373394908852,
+    "trial_rows": [
+      {
+        "trial": 0,
+        "acc": 0.3531,
+        "sensitive_query_rate": 0.0226,
+        "avg_confidence": 0.3924498816505074
+      },
+      {
+        "trial": 1,
+        "acc": 0.3611,
+        "sensitive_query_rate": 0.0228,
+        "avg_confidence": 0.39781218033730986
+      },
+      {
+        "trial": 2,
+        "acc": 0.3537,
+        "sensitive_query_rate": 0.0236,
+        "avg_confidence": 0.3973976744458079
+      },
+      {
+        "trial": 3,
+        "acc": 0.3562,
+        "sensitive_query_rate": 0.021,
+        "avg_confidence": 0.39350452850461004
+      },
+      {
+        "trial": 4,
+        "acc": 0.353,
+        "sensitive_query_rate": 0.0232,
+        "avg_confidence": 0.39633618721663955
+      },
+      {
+        "trial": 5,
+        "acc": 0.3513,
+        "sensitive_query_rate": 0.0202,
+        "avg_confidence": 0.39379460067600014
+      },
+      {
+        "trial": 6,
+        "acc": 0.3546,
+        "sensitive_query_rate": 0.0228,
+        "avg_confidence": 0.39511336158216
+      },
+      {
+        "trial": 7,
+        "acc": 0.3476,
+        "sensitive_query_rate": 0.022,
+        "avg_confidence": 0.3964811803564429
+      }
+    ]
+  },
+  {
+    "run_name": "lam=0.4",
+    "lambda_adv": 0.4,
+    "alpha_sens": 0.0,
+    "num_samples": 10000,
+    "num_trials": 8,
+    "history_mode": "non_sensitive",
+    "history_range": [
+      1,
+      2
+    ],
+    "mean_acc": 0.3522875,
+    "std_acc": 0.006302665606709594,
+    "mean_sensitive_query_rate": 0.023087499999999997,
+    "std_sensitive_query_rate": 0.0021618496131784936,
+    "mean_confidence": 0.39123813973683863,
+    "std_confidence": 0.0016035558900005411,
+    "trial_rows": [
+      {
+        "trial": 0,
+        "acc": 0.3592,
+        "sensitive_query_rate": 0.0271,
+        "avg_confidence": 0.3892971049681306
+      },
+      {
+        "trial": 1,
+        "acc": 0.3613,
+        "sensitive_query_rate": 0.0226,
+        "avg_confidence": 0.39274438824504615
+      },
+      {
+        "trial": 2,
+        "acc": 0.3553,
+        "sensitive_query_rate": 0.0229,
+        "avg_confidence": 0.39407227268069983
+      },
+      {
+        "trial": 3,
+        "acc": 0.3509,
+        "sensitive_query_rate": 0.0196,
+        "avg_confidence": 0.3896153455168009
+      },
+      {
+        "trial": 4,
+        "acc": 0.3471,
+        "sensitive_query_rate": 0.025,
+        "avg_confidence": 0.39034536407738923
+      },
+      {
+        "trial": 5,
+        "acc": 0.3493,
+        "sensitive_query_rate": 0.0209,
+        "avg_confidence": 0.3904368257328868
+      },
+      {
+        "trial": 6,
+        "acc": 0.3406,
+        "sensitive_query_rate": 0.0237,
+        "avg_confidence": 0.39069469303935767
+      },
+      {
+        "trial": 7,
+        "acc": 0.3546,
+        "sensitive_query_rate": 0.0229,
+        "avg_confidence": 0.39269912363439796
+      }
+    ]
+  },
+  {
+    "run_name": "lam=1.0",
+    "lambda_adv": 1.0,
+    "alpha_sens": 0.0,
+    "num_samples": 10000,
+    "num_trials": 8,
+    "history_mode": "non_sensitive",
+    "history_range": [
+      1,
+      2
+    ],
+    "mean_acc": 0.352525,
+    "std_acc": 0.003672788450210549,
+    "mean_sensitive_query_rate": 0.0299375,
+    "std_sensitive_query_rate": 0.0019071821491404542,
+    "mean_confidence": 0.3951007986418903,
+    "std_confidence": 0.0015558330193746334,
+    "trial_rows": [
+      {
+        "trial": 0,
+        "acc": 0.3538,
+        "sensitive_query_rate": 0.0307,
+        "avg_confidence": 0.39341627111434935
+      },
+      {
+        "trial": 1,
+        "acc": 0.3568,
+        "sensitive_query_rate": 0.0304,
+        "avg_confidence": 0.3967650661230087
+      },
+      {
+        "trial": 2,
+        "acc": 0.3547,
+        "sensitive_query_rate": 0.0302,
+        "avg_confidence": 0.3969836169138551
+      },
+      {
+        "trial": 3,
+        "acc": 0.3457,
+        "sensitive_query_rate": 0.0269,
+        "avg_confidence": 0.393102522829175
+      },
+      {
+        "trial": 4,
+        "acc": 0.355,
+        "sensitive_query_rate": 0.0333,
+        "avg_confidence": 0.396415628631413
+      },
+      {
+        "trial": 5,
+        "acc": 0.3511,
+        "sensitive_query_rate": 0.0273,
+        "avg_confidence": 0.39466885125786066
+      },
+      {
+        "trial": 6,
+        "acc": 0.3479,
+        "sensitive_query_rate": 0.0299,
+        "avg_confidence": 0.39330860470980405
+      },
+      {
+        "trial": 7,
+        "acc": 0.3552,
+        "sensitive_query_rate": 0.0308,
+        "avg_confidence": 0.3961458275556564
+      }
+    ]
+  }
+]
