@@ -1,0 +1,24 @@
+[
+  {
+    "run_name": "baseline",
+    "lambda_adv": 0.0,
+    "mean_acc": 0.3534,
+    "acc_delta_vs_baseline": 0.0,
+    "std_acc": 0.0054,
+    "mean_sensitive_query_rate": 0.0268,
+    "sens_delta_vs_baseline": 0.0,
+    "std_sensitive_query_rate": 0.0016,
+    "mean_confidence": 0.3907
+  },
+  {
+    "run_name": "lam=0.4",
+    "lambda_adv": 0.4,
+    "mean_acc": 0.3546,
+    "acc_delta_vs_baseline": 0.0012,
+    "std_acc": 0.0041,
+    "mean_sensitive_query_rate": 0.0302,
+    "sens_delta_vs_baseline": 0.0034,
+    "std_sensitive_query_rate": 0.0018,
+    "mean_confidence": 0.3888
+  }
+]
