@@ -37,6 +37,7 @@ def main():
     parser.add_argument("--pool-size", type=int, default=400)
     parser.add_argument("--num-trials", type=int, default=2)
     parser.add_argument("--output-name", type=str, default="cifar10_replay")
+    parser.add_argument("--figure-ext", type=str, default=".svg")
     args = parser.parse_args()
 
     paths = default_paths(repo_root=REPO_ROOT)
@@ -60,7 +61,7 @@ def main():
     answering_model = load_concept_qa_checkpoint(qa_checkpoint, device=device)
 
     baseline_checkpoint = args.baseline_checkpoint or str(paths.checkpoints_root / "baseline_best.pt")
-    staq_checkpoint = args.staq_checkpoint or str(paths.checkpoints_root / "lam_0.80_best.pt")
+    staq_checkpoint = args.staq_checkpoint or str(paths.checkpoints_root / "lam_0.40_best.pt")
     baseline_bundle = load_run_bundle(
         baseline_checkpoint,
         device=device,
@@ -106,10 +107,11 @@ def main():
     result = {"selected": selected}
     fig_path = None
     if selected:
+        figure_ext = args.figure_ext if args.figure_ext.startswith(".") else f".{args.figure_ext}"
         fig_path = plot_rollout_comparisons(
             records=selected,
             raw_dataset=raw_test_ds,
-            output_path=paths.figures_root / f"{args.output_name}_intuition.png",
+            output_path=paths.figures_root / f"{args.output_name}_intuition{figure_ext}",
             title_prefix="tiny-start replay",
         )
 

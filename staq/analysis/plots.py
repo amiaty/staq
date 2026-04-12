@@ -1,4 +1,4 @@
-"""Plot helpers for training curves and rollout comparisons."""
+"""Plot helpers for rollout comparisons and fixed-history summaries."""
 
 from __future__ import annotations
 
@@ -9,112 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from staq.analysis.rollouts import format_confidence_path, format_stop_sequence
-
-
-def plot_training_curves(history_by_run: dict[str, list[dict]], output_path: str | Path) -> Path:
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
-    for run_name, rows in history_by_run.items():
-        epochs = [row["epoch"] for row in rows]
-        acc = [row["test_acc"] for row in rows]
-        sens = [row["test_sens_q_rate"] for row in rows]
-        axes[0].plot(epochs, acc, marker="o", linewidth=2, label=run_name)
-        axes[1].plot(epochs, sens, marker="o", linewidth=2, label=run_name)
-
-    axes[0].set_title("Test accuracy by epoch")
-    axes[0].set_xlabel("Epoch")
-    axes[0].set_ylabel("Accuracy")
-    axes[0].legend(fontsize=9)
-
-    axes[1].set_title("Sensitive query rate by epoch")
-    axes[1].set_xlabel("Epoch")
-    axes[1].set_ylabel("Sensitive query rate")
-    axes[1].legend(fontsize=9)
-
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=200, bbox_inches="tight")
-    plt.close(fig)
-    return output_path
-
-
-def summarize_hparam_sweep(history_by_run: dict[str, list[dict]], hparam_name: str = "lambda_adv") -> list[dict]:
-    summary_rows = []
-    for run_name, rows in history_by_run.items():
-        if not rows:
-            continue
-        first_row = rows[0]
-        if hparam_name not in first_row:
-            raise KeyError(f"{hparam_name} is missing from history rows for {run_name}")
-
-        best_row = max(rows, key=lambda row: row["test_acc"])
-        final_row = rows[-1]
-        summary_rows.append(
-            {
-                "run_name": run_name,
-                hparam_name: float(first_row[hparam_name]),
-                "alpha_sens": float(first_row.get("alpha_sens", 0.0)),
-                "best_epoch": int(best_row["epoch"]),
-                "best_test_acc": float(best_row["test_acc"]),
-                "test_sens_q_rate_at_best_acc": float(best_row["test_sens_q_rate"]),
-                "final_test_acc": float(final_row["test_acc"]),
-                "final_test_sens_q_rate": float(final_row["test_sens_q_rate"]),
-            }
-        )
-    return sorted(summary_rows, key=lambda row: (row[hparam_name], row["run_name"]))
-
-
-def plot_hparam_sweep_summary(
-    history_by_run: dict[str, list[dict]],
-    output_path: str | Path,
-    hparam_name: str = "lambda_adv",
-    hparam_label: str | None = None,
-) -> Path:
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    summary_rows = summarize_hparam_sweep(history_by_run=history_by_run, hparam_name=hparam_name)
-    if not summary_rows:
-        raise ValueError("history_by_run must not be empty")
-
-    hparam_label = hparam_label or hparam_name.replace("_", " ")
-    x = [row[hparam_name] for row in summary_rows]
-    best_acc = [row["best_test_acc"] for row in summary_rows]
-    sens_at_best = [row["test_sens_q_rate_at_best_acc"] for row in summary_rows]
-
-    fig, axes = plt.subplots(1, 3, figsize=(15.5, 4.5))
-
-    axes[0].plot(x, best_acc, marker="o", linewidth=2, color="#1f77b4")
-    axes[0].set_title("Best-epoch test accuracy")
-    axes[0].set_xlabel(hparam_label)
-    axes[0].set_ylabel("Accuracy")
-    axes[0].grid(alpha=0.25)
-
-    axes[1].plot(x, sens_at_best, marker="o", linewidth=2, color="#d62728")
-    axes[1].set_title("Sensitive query rate at best epoch")
-    axes[1].set_xlabel(hparam_label)
-    axes[1].set_ylabel("Sensitive query rate")
-    axes[1].grid(alpha=0.25)
-
-    axes[2].plot(sens_at_best, best_acc, marker="o", linewidth=1.5, color="#2e8b57")
-    axes[2].set_title("Best-epoch accuracy / sensitivity trade-off")
-    axes[2].set_xlabel("Sensitive query rate at best epoch")
-    axes[2].set_ylabel("Best-epoch test accuracy")
-    axes[2].grid(alpha=0.25)
-    for row in summary_rows:
-        axes[2].annotate(
-            f"{row[hparam_name]:.2f}",
-            (row["test_sens_q_rate_at_best_acc"], row["best_test_acc"]),
-            textcoords="offset points",
-            xytext=(0, 6),
-            ha="center",
-            fontsize=9,
-        )
-
-    plt.tight_layout()
-    fig.savefig(output_path, dpi=200, bbox_inches="tight")
-    plt.close(fig)
-    return output_path
 
 
 def plot_fixed_history_eval_summary(
