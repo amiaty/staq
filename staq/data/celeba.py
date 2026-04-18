@@ -74,6 +74,18 @@ def build_celeba_attribute_spec(
     )
 
 
+def _clean_celeba_attr_names(attr_names: list[str], num_columns: int) -> list[str]:
+    # Some torchvision versions return a trailing empty name from whitespace-split parsing,
+    # so the name list is one longer than the attr tensor. Trust the tensor width.
+    cleaned = [name for name in attr_names if name and name.strip()]
+    if len(cleaned) != num_columns:
+        raise ValueError(
+            f"CelebA attribute name/column mismatch after cleaning: "
+            f"{len(cleaned)} names vs {num_columns} columns"
+        )
+    return cleaned
+
+
 def load_celeba_attribute_spec(
     root: str | Path,
     target_attribute: str,
@@ -87,8 +99,9 @@ def load_celeba_attribute_spec(
         transform=None,
         download=download,
     )
+    attr_names = _clean_celeba_attr_names(list(dataset.attr_names), dataset.attr.size(1))
     return build_celeba_attribute_spec(
-        attr_names=list(dataset.attr_names),
+        attr_names=attr_names,
         target_attribute=target_attribute,
         sensitive_attributes=sensitive_attributes,
     )

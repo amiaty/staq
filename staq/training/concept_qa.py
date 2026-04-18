@@ -6,9 +6,10 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 from tqdm.auto import tqdm
 
-from staq.core.clip_features import concept_qa_batch_inputs
+from staq.core.clip_features import build_concept_qa_inputs, concept_qa_batch_inputs, encode_images
 
 
 def load_gpt_answers(path: str | Path) -> np.ndarray:
@@ -47,12 +48,18 @@ def resolve_concept_targets(
 
 
 def concept_qa_loss(logits: torch.Tensor, query_answers: torch.Tensor, clip_scores: torch.Tensor) -> torch.Tensor:
-    log_positive = torch.log(torch.sigmoid(logits))
-    log_negative = torch.log(1 - torch.sigmoid(logits))
+    # CIFAR-style weak-label loss: per-class GPT answers reweighted by CLIP similarity.
+    log_positive = F.logsigmoid(logits)
+    log_negative = F.logsigmoid(-logits)
     loss = log_positive * (query_answers * clip_scores) + log_negative * (
         (1 - query_answers) + query_answers * (1 - clip_scores)
     )
     return -loss.sum() / torch.numel(loss)
+
+
+def concept_qa_bce_loss(logits: torch.Tensor, query_answers: torch.Tensor) -> torch.Tensor:
+    # Clean per-image BCE loss for datasets with ground-truth concept labels (e.g. CelebA).
+    return F.binary_cross_entropy_with_logits(logits, query_answers)
 
 
 def train_concept_qa_epoch(
@@ -70,24 +77,40 @@ def train_concept_qa_epoch(
     model.train()
     sum_loss = 0.0
     n_batches = 0
+    num_queries = dictionary.size(1)
     for batch_index, batch in enumerate(tqdm(loader, desc="Concept-QA train", leave=False)):
         if max_batches is not None and batch_index >= max_batches:
             break
         images, labels, batch_targets = _unpack_concept_qa_batch(batch)
-        targets = resolve_concept_targets(
-            labels=labels,
-            gpt_answers=gpt_answers,
-            batch_targets=batch_targets,
-            positive_depends=positive_depends,
-        ).to(train_device)
-        inputs, clip_scores = concept_qa_batch_inputs(
-            model_clip=model_clip,
-            images=images,
-            dictionary=dictionary,
-            device=clip_device,
-        )
-        logits = model(inputs.to(train_device)).view_as(clip_scores).float()
-        loss = concept_qa_loss(logits=logits, query_answers=targets.float(), clip_scores=clip_scores.to(train_device))
+
+        if batch_targets is not None:
+            # Per-image ground-truth concept labels → plain BCE.
+            targets = batch_targets.float().to(train_device)
+            with torch.no_grad():
+                image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
+            inputs = build_concept_qa_inputs(image_features=image_features, dictionary=dictionary).float()
+            logits = model(inputs.to(train_device)).view(targets.size(0), num_queries).float()
+            loss = concept_qa_bce_loss(logits=logits, query_answers=targets)
+        else:
+            # Class-conditioned GPT answers reweighted by CLIP similarity.
+            targets = resolve_concept_targets(
+                labels=labels,
+                gpt_answers=gpt_answers,
+                batch_targets=None,
+                positive_depends=positive_depends,
+            ).to(train_device)
+            inputs, clip_scores = concept_qa_batch_inputs(
+                model_clip=model_clip,
+                images=images,
+                dictionary=dictionary,
+                device=clip_device,
+            )
+            logits = model(inputs.to(train_device)).view_as(clip_scores).float()
+            loss = concept_qa_loss(
+                logits=logits,
+                query_answers=targets.float(),
+                clip_scores=clip_scores.to(train_device),
+            )
 
         optimizer.zero_grad()
         loss.backward()
@@ -113,6 +136,7 @@ def evaluate_concept_qa(
     model.eval()
     sum_accuracy = 0.0
     n_batches = 0
+    num_queries = dictionary.size(1)
     for batch_index, batch in enumerate(tqdm(loader, desc="Concept-QA eval", leave=False)):
         if max_batches is not None and batch_index >= max_batches:
             break
@@ -123,14 +147,10 @@ def evaluate_concept_qa(
             batch_targets=batch_targets,
             positive_depends=False,
         ).to(train_device)
-        inputs, _ = concept_qa_batch_inputs(
-            model_clip=model_clip,
-            images=images,
-            dictionary=dictionary,
-            device=clip_device,
-        )
-        logits = model(inputs.to(train_device)).view(targets.size(0), targets.size(1))
-        preds = torch.where(logits > 0, torch.ones_like(logits), torch.zeros_like(logits))
+        image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
+        inputs = build_concept_qa_inputs(image_features=image_features, dictionary=dictionary).float()
+        logits = model(inputs.to(train_device)).view(targets.size(0), num_queries)
+        preds = (logits > 0).float()
         sum_accuracy += float((preds == targets).float().mean().item())
         n_batches += 1
     return {"accuracy": sum_accuracy / max(n_batches, 1)}
