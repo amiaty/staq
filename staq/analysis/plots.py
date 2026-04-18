@@ -111,12 +111,13 @@ def plot_rollout_comparisons(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if not records:
         raise ValueError("records must not be empty")
+    _ = title_prefix  # Kept for backward compatibility; not shown in the figure.
 
     fig, axes = plt.subplots(
         len(records),
         3,
-        figsize=(22, max(4.8, 4.5 * len(records))),
-        gridspec_kw={"width_ratios": [1.0, 1.55, 1.55]},
+        figsize=(18.5, max(4.2, 3.9 * len(records))),
+        gridspec_kw={"width_ratios": [1.0, 1.35, 1.35]},
     )
     if len(records) == 1:
         axes = np.array([axes])
@@ -126,46 +127,53 @@ def plot_rollout_comparisons(
         ax_img.imshow(image)
         ax_img.axis("off")
         ax_img.set_title(
-            f"{title_prefix} | idx={row['sample_idx']} | true={row['label_name']} | "
+            f"idx={row['sample_idx']} | true={row['label_name']} | "
             f"gap={row['sensitive_gap']} | div={row['first_divergence_step']}",
-            fontsize=10,
+            fontsize=11.5,
+            pad=8,
         )
 
         for ax in (ax_base, ax_staq):
             ax.axis("off")
+            ax.set_xlim(0, 1)
+            ax.set_ylim(0, 1)
 
         start_text = ", ".join(row["initial_history"]) if row["initial_history"] else "(empty)"
         meta_parts = [
-            f"start ({row['initial_history_size']}): {start_text}",
-            f"both correct: {row['both_correct']}",
-            f"divergence step: {row['first_divergence_step']}",
+            f"history ({row['initial_history_size']}): {start_text}",
+            f"both correct: {'yes' if row['both_correct'] else 'no'}",
+            f"divergence: {row['first_divergence_step']}",
         ]
-        meta_text = textwrap.fill(" | ".join(meta_parts), width=56)
+        meta_text = textwrap.fill(" | ".join(meta_parts), width=48)
 
         ax_base.text(
-            0.0,
-            1.0,
-            meta_text + "\n\n" + _wrap_block("baseline", row, "baseline"),
-            fontsize=9.5,
+            0.02,
+            0.98,
+            meta_text
+            + "\n\n"
+            + _wrap_block("Baseline", row, "baseline", wrap_width=52, seq_items=5, conf_items=6),
+            fontsize=10.5,
             va="top",
             ha="left",
-            linespacing=1.35,
+            linespacing=1.25,
             family="monospace",
-            bbox=dict(boxstyle="round,pad=0.45", facecolor="#fff5f5", edgecolor="crimson", alpha=0.95),
+            transform=ax_base.transAxes,
+            bbox=dict(boxstyle="round,pad=0.35", facecolor="#fff8f8", edgecolor="#c05050", linewidth=1.0),
         )
         ax_staq.text(
-            0.0,
-            1.0,
-            _wrap_block("STAQ", row, "staq"),
-            fontsize=9.5,
+            0.02,
+            0.98,
+            _wrap_block("STAQ", row, "staq", wrap_width=52, seq_items=5, conf_items=6),
+            fontsize=10.5,
             va="top",
             ha="left",
-            linespacing=1.35,
+            linespacing=1.25,
             family="monospace",
-            bbox=dict(boxstyle="round,pad=0.45", facecolor="#f5fff5", edgecolor="darkgreen", alpha=0.95),
+            transform=ax_staq.transAxes,
+            bbox=dict(boxstyle="round,pad=0.35", facecolor="#f8fff8", edgecolor="#2e7d32", linewidth=1.0),
         )
 
-    plt.subplots_adjust(wspace=0.10, hspace=0.42)
+    plt.subplots_adjust(left=0.03, right=0.99, top=0.97, bottom=0.03, wspace=0.04, hspace=0.24)
     fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return output_path

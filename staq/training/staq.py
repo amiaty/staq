@@ -13,7 +13,7 @@ from tqdm.auto import tqdm
 from staq.core.clip_features import encode_images
 from staq.core.runtime import apply_query_distribution, concept_answers_from_image_features, make_sensitive_mask
 from staq.models import Network
-from staq.sensitive_labels import compute_s_from_image_features
+from staq.sensitive_labels import compute_s_from_concept_targets, compute_s_from_image_features
 from staq.training.history_sampling import HistorySamplingConfig, sample_history_mask
 
 
@@ -55,6 +55,16 @@ def build_staq_models(
         classifier.load_state_dict(torch.load(classifier_checkpoint, map_location="cpu"))
 
     return actor, classifier, s_head
+
+
+def _unpack_staq_batch(batch):
+    if len(batch) == 2:
+        images, labels = batch
+        return images, labels, None
+    if len(batch) == 3:
+        images, labels, concept_targets = batch
+        return images, labels, concept_targets
+    raise ValueError("STAQ batches must contain (images, labels) or (images, labels, concept_targets)")
 
 
 def run_staq_epoch(
@@ -102,20 +112,27 @@ def run_staq_epoch(
     sum_actor_grad = 0.0
     n_batches = 0
 
-    for batch_index, (images, labels) in enumerate(loader):
+    for batch_index, batch in enumerate(loader):
         if max_batches is not None and batch_index >= max_batches:
             break
+        images, labels, concept_targets = _unpack_staq_batch(batch)
 
         with torch.no_grad():
             image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
-            s_soft, _ = compute_s_from_image_features(
-                image_features=image_features,
-                logit_scale=model_clip.logit_scale.exp(),
-                dictionary=dictionary,
-                sens_idx=sens_idx,
-                tau=sensitive_tau,
-                topk=sensitive_topk,
-            )
+            if concept_targets is None:
+                s_soft, _ = compute_s_from_image_features(
+                    image_features=image_features,
+                    logit_scale=model_clip.logit_scale.exp(),
+                    dictionary=dictionary,
+                    sens_idx=sens_idx,
+                    tau=sensitive_tau,
+                    topk=sensitive_topk,
+                )
+            else:
+                s_soft, _ = compute_s_from_concept_targets(
+                    concept_targets=concept_targets.to(train_device),
+                    sens_idx=sens_idx,
+                )
             answers = concept_answers_from_image_features(
                 image_features=image_features,
                 dictionary=dictionary,

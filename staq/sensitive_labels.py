@@ -86,6 +86,20 @@ def compute_s_from_image_features(
 
 
 @torch.no_grad()
+def compute_s_from_concept_targets(
+    concept_targets: torch.Tensor,
+    sens_idx: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    if sens_idx.numel() == 0:
+        zeros = torch.zeros(concept_targets.size(0), dtype=torch.float32, device=concept_targets.device)
+        return zeros, zeros
+    sens_scores = concept_targets[:, sens_idx.to(concept_targets.device)].float()
+    s_soft = sens_scores.mean(dim=1)
+    s_hard = (sens_scores.max(dim=1).values > 0.5).float()
+    return s_soft, s_hard
+
+
+@torch.no_grad()
 def compute_s_batch(
     images: torch.Tensor,
     model_clip,
@@ -104,6 +118,17 @@ def compute_s_batch(
         tau=tau,
         topk=topk,
     )
+
+
+def build_sensitive_labels_from_concept_targets(
+    concept_targets: torch.Tensor,
+    sens_idx: torch.Tensor,
+) -> tuple[np.ndarray, np.ndarray]:
+    s_soft, s_hard = compute_s_from_concept_targets(
+        concept_targets=concept_targets,
+        sens_idx=sens_idx,
+    )
+    return s_soft.cpu().numpy(), s_hard.cpu().numpy()
 
 
 def build_sensitive_labels(
