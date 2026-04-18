@@ -147,7 +147,7 @@ class CelebAStaqConfig:
     sensitive_tau: float = 0.7
     sensitive_topk: int = 3
     actor_eps: float = 1.0
-    batch_size_cuda: int = 256
+    batch_size_cuda: int = 512
     batch_size_cpu: int = 32
     num_workers_cuda: int = 0
     num_workers_cpu: int = 0
