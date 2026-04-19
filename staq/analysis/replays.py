@@ -70,6 +70,8 @@ def sample_intuition_replays(
     require_nontrivial: bool = True,
     prefer_divergent: bool = True,
     prefer_baseline_sensitive: bool = True,
+    confidence_threshold: float = 0.95,
+    rollout_max_steps: int = 20,
 ) -> list[dict]:
     rng = np.random.default_rng(random_seed)
     sample_indices = rng.permutation(len(dataset))[: min(pool_size, len(dataset))]
@@ -101,6 +103,8 @@ def sample_intuition_replays(
                     concepts=concepts,
                     sensitive_mask=sensitive_mask,
                     class_names=class_names,
+                    threshold=confidence_threshold,
+                    max_steps=rollout_max_steps,
                 )
                 staq_stop = rollout_until_confidence(
                     bundle=staq_bundle,
@@ -109,6 +113,8 @@ def sample_intuition_replays(
                     concepts=concepts,
                     sensitive_mask=sensitive_mask,
                     class_names=class_names,
+                    threshold=confidence_threshold,
+                    max_steps=rollout_max_steps,
                 )
                 if require_nontrivial and baseline_stop["queries_asked"] == 0 and staq_stop["queries_asked"] == 0:
                     continue

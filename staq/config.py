@@ -135,11 +135,13 @@ class CelebAStaqConfig:
         "Male",
         "Heavy_Makeup",
         "Wearing_Lipstick",
-        "Mustache",
-        "Goatee",
-        "Sideburns",
     )
-    max_queries: int = 39
+    excluded_query_attributes: tuple[str, ...] = (
+        "High_Cheekbones",
+        "Mouth_Slightly_Open",
+        "Rosy_Cheeks",
+    )
+    max_queries: int = 36
     num_classes: int = 2
     threshold_for_binarization: float = 0.0
     confidence_threshold: float = 0.95
