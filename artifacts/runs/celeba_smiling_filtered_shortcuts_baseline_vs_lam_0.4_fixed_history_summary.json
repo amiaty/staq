@@ -1,0 +1,138 @@
+[
+  {
+    "run_name": "baseline",
+    "lambda_adv": 0.0,
+    "alpha_sens": 0.0,
+    "num_samples": 19962,
+    "num_trials": 8,
+    "history_mode": "non_sensitive",
+    "history_range": [
+      1,
+      2
+    ],
+    "mean_acc": 0.6143672978659453,
+    "std_acc": 0.0013851113678688054,
+    "mean_sensitive_query_rate": 0.0,
+    "std_sensitive_query_rate": 0.0,
+    "mean_confidence": 0.6217873005978201,
+    "std_confidence": 0.00013312979695771177,
+    "trial_rows": [
+      {
+        "trial": 0,
+        "acc": 0.6123133954513575,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6218849655478527
+      },
+      {
+        "trial": 1,
+        "acc": 0.6151688207594429,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6219684364244845
+      },
+      {
+        "trial": 2,
+        "acc": 0.6149684400360685,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6217439830506234
+      },
+      {
+        "trial": 3,
+        "acc": 0.6152690111211302,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6216909588010311
+      },
+      {
+        "trial": 4,
+        "acc": 0.6124135858130448,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.621671837399878
+      },
+      {
+        "trial": 5,
+        "acc": 0.616671676184751,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6216656090519063
+      },
+      {
+        "trial": 6,
+        "acc": 0.6141168219617272,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6220026467763975
+      },
+      {
+        "trial": 7,
+        "acc": 0.61401663160004,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6216699677303862
+      }
+    ]
+  },
+  {
+    "run_name": "lam=0.4",
+    "lambda_adv": 0.4,
+    "alpha_sens": 0.0,
+    "num_samples": 19962,
+    "num_trials": 8,
+    "history_mode": "non_sensitive",
+    "history_range": [
+      1,
+      2
+    ],
+    "mean_acc": 0.615043582807334,
+    "std_acc": 0.0009642509044644834,
+    "mean_sensitive_query_rate": 0.0,
+    "std_sensitive_query_rate": 0.0,
+    "mean_confidence": 0.6331440846246961,
+    "std_confidence": 0.0001430042176975114,
+    "trial_rows": [
+      {
+        "trial": 0,
+        "acc": 0.613515679791604,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6330591395143492
+      },
+      {
+        "trial": 1,
+        "acc": 0.6142170123234145,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6331147343956413
+      },
+      {
+        "trial": 2,
+        "acc": 0.6151187255785994,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6332991980572357
+      },
+      {
+        "trial": 3,
+        "acc": 0.6164712954613766,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6328775024422423
+      },
+      {
+        "trial": 4,
+        "acc": 0.6146678689510069,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6333069179008151
+      },
+      {
+        "trial": 5,
+        "acc": 0.6165213906422202,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6331093158222442
+      },
+      {
+        "trial": 6,
+        "acc": 0.6150185352169122,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6333110491070453
+      },
+      {
+        "trial": 7,
+        "acc": 0.6148181544935377,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6330748197579955
+      }
+    ]
+  }
+]

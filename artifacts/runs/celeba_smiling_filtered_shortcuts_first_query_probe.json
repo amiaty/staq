@@ -1,0 +1,80 @@
+{
+  "baseline": {
+    "summary": {
+      "matched_sensitive_concepts": [
+        "Male",
+        "Heavy_Makeup",
+        "Wearing_Lipstick"
+      ],
+      "pool_size": 10000,
+      "num_trials": 3,
+      "history_mode": "non_sensitive",
+      "history_range": [
+        1,
+        2
+      ],
+      "forced_topk_steps": 1,
+      "tested_states": 30000,
+      "states_with_sensitive_in_topk": 0,
+      "sensitive_in_topk_rate": 0.0,
+      "avg_sensitive_queries_in_topk": 0.0,
+      "position_hits": {},
+      "top_sensitive_concepts": [],
+      "top_overall_concepts_in_topk": [
+        [
+          "oval face",
+          27114
+        ],
+        [
+          "bags under eyes",
+          2156
+        ],
+        [
+          "wearing earrings",
+          730
+        ]
+      ],
+      "class_hit_states": []
+    },
+    "examples": []
+  },
+  "lam_0.40": {
+    "summary": {
+      "matched_sensitive_concepts": [
+        "Male",
+        "Heavy_Makeup",
+        "Wearing_Lipstick"
+      ],
+      "pool_size": 10000,
+      "num_trials": 3,
+      "history_mode": "non_sensitive",
+      "history_range": [
+        1,
+        2
+      ],
+      "forced_topk_steps": 1,
+      "tested_states": 30000,
+      "states_with_sensitive_in_topk": 0,
+      "sensitive_in_topk_rate": 0.0,
+      "avg_sensitive_queries_in_topk": 0.0,
+      "position_hits": {},
+      "top_sensitive_concepts": [],
+      "top_overall_concepts_in_topk": [
+        [
+          "oval face",
+          27239
+        ],
+        [
+          "bags under eyes",
+          2737
+        ],
+        [
+          "wearing earrings",
+          24
+        ]
+      ],
+      "class_hit_states": []
+    },
+    "examples": []
+  }
+}
