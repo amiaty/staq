@@ -141,6 +141,11 @@ class CelebAStaqConfig:
     target_attribute: str = "Smiling"
     sensitive_attributes: tuple[str, ...] = (
         "Male",
+        "No_Beard",
+        "Mustache",
+        "Goatee",
+        "Sideburns",
+        "5_o_Clock_Shadow",
         "Heavy_Makeup",
         "Wearing_Lipstick",
     )
