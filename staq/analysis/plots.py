@@ -8,7 +8,7 @@ import textwrap
 import matplotlib.pyplot as plt
 import numpy as np
 
-from staq.analysis.rollouts import format_confidence_path, format_stop_sequence
+from staq.analysis.rollouts import format_stop_sequence
 
 
 def plot_fixed_history_eval_summary(
@@ -77,31 +77,81 @@ def plot_fixed_history_eval_summary(
     return output_path
 
 
+def _format_metric_path(
+    row: dict,
+    stop: dict,
+    *,
+    value_key: str,
+    empty_key: str,
+    initial_key: str,
+    prefix: str,
+    max_items: int,
+    wrap_width: int,
+) -> str:
+    parts = []
+    if empty_key in stop:
+        parts.append(f"empty:{stop[empty_key]:.2f}")
+    if row["initial_history_size"] > 0 and initial_key in stop:
+        parts.append(f"init:{stop[initial_key]:.2f}")
+
+    query_states = stop["states"][1:]
+    for state in query_states[:max_items]:
+        parts.append(f"q{state['after_queries']}:{state[value_key]:.2f}")
+    if len(query_states) > max_items:
+        parts.append("...")
+
+    return textwrap.fill(
+        f"{prefix}: " + " -> ".join(parts),
+        width=wrap_width,
+        subsequent_indent="    ",
+    )
+
+
 def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items: int = 6, conf_items: int = 8) -> str:
     stop = row[key]
     first_sensitive = "none" if stop["first_sensitive_step"] is None else str(stop["first_sensitive_step"])
     target_name = stop.get("positive_class_name")
     if target_name is None:
-        metric_summary = f"stop={stop['final_confidence']:.2f}"
-        metric_path = textwrap.fill(
-            f"conf path: {format_confidence_path(stop['states'], max_items=conf_items)}",
-            width=wrap_width,
-            subsequent_indent="    ",
-        )
+        metric_summary = f"conf={stop['final_confidence']:.2f} | stop={stop['stop_reason']}"
+        metric_lines = [
+            _format_metric_path(
+                row,
+                stop,
+                value_key="confidence",
+                empty_key="empty_confidence",
+                initial_key="initial_confidence",
+                prefix="conf path",
+                max_items=conf_items,
+                wrap_width=wrap_width,
+            )
+        ]
     else:
-        metric_summary = f"p({target_name})={stop['final_positive_prob']:.2f}"
-        empty_prob = stop.get("empty_positive_prob")
-        positive_path = format_confidence_path(stop["states"], max_items=conf_items, key="positive_prob")
-        path_text = (
-            f"p({target_name}) path: empty:{empty_prob:.2f} -> {positive_path}"
-            if empty_prob is not None
-            else f"p({target_name}) path: {positive_path}"
+        metric_summary = (
+            f"p({target_name})={stop['final_positive_prob']:.2f} | "
+            f"conf={stop['final_confidence']:.2f} | stop={stop['stop_reason']}"
         )
-        metric_path = textwrap.fill(
-            path_text,
-            width=wrap_width,
-            subsequent_indent="    ",
-        )
+        metric_lines = [
+            _format_metric_path(
+                row,
+                stop,
+                value_key="positive_prob",
+                empty_key="empty_positive_prob",
+                initial_key="initial_positive_prob",
+                prefix=f"p({target_name}) path",
+                max_items=conf_items,
+                wrap_width=wrap_width,
+            ),
+            _format_metric_path(
+                row,
+                stop,
+                value_key="confidence",
+                empty_key="empty_confidence",
+                initial_key="initial_confidence",
+                prefix="conf path",
+                max_items=conf_items,
+                wrap_width=wrap_width,
+            ),
+        ]
     lines = [
         label,
         (
@@ -109,7 +159,7 @@ def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items
             f"first sensitive={first_sensitive} | {metric_summary} | "
             f"pred={stop['final_pred_name']}"
         ),
-        metric_path,
+        *metric_lines,
         textwrap.fill(
             f"path: {format_stop_sequence(stop['sequence'], max_items=seq_items)}",
             width=wrap_width,
@@ -134,8 +184,8 @@ def plot_rollout_comparisons(
     fig, axes = plt.subplots(
         len(records),
         3,
-        figsize=(18.5, max(4.2, 3.9 * len(records))),
-        gridspec_kw={"width_ratios": [1.0, 1.35, 1.35]},
+        figsize=(23.0, max(4.2, 4.0 * len(records))),
+        gridspec_kw={"width_ratios": [1.0, 1.75, 1.75]},
     )
     if len(records) == 1:
         axes = np.array([axes])
@@ -162,15 +212,15 @@ def plot_rollout_comparisons(
             f"both correct: {'yes' if row['both_correct'] else 'no'}",
             f"divergence: {row['first_divergence_step']}",
         ]
-        meta_text = textwrap.fill(" | ".join(meta_parts), width=48)
+        meta_text = textwrap.fill(" | ".join(meta_parts), width=40)
 
         ax_base.text(
             0.02,
             0.98,
             meta_text
             + "\n\n"
-            + _wrap_block("Baseline", row, "baseline", wrap_width=52, seq_items=5, conf_items=6),
-            fontsize=10.5,
+            + _wrap_block("Baseline", row, "baseline", wrap_width=36, seq_items=4, conf_items=4),
+            fontsize=9.0,
             va="top",
             ha="left",
             linespacing=1.25,
@@ -181,8 +231,8 @@ def plot_rollout_comparisons(
         ax_staq.text(
             0.02,
             0.98,
-            _wrap_block("STAQ", row, "staq", wrap_width=52, seq_items=5, conf_items=6),
-            fontsize=10.5,
+            _wrap_block("STAQ", row, "staq", wrap_width=36, seq_items=4, conf_items=4),
+            fontsize=9.0,
             va="top",
             ha="left",
             linespacing=1.25,

@@ -6,15 +6,15 @@
         "Heavy_Makeup",
         "Wearing_Lipstick"
       ],
-      "pool_size": 10000,
+      "pool_size": 2000,
       "num_trials": 3,
-      "history_mode": "non_sensitive",
+      "history_mode": "random",
       "history_range": [
-        1,
-        2
+        0,
+        0
       ],
       "forced_topk_steps": 1,
-      "tested_states": 30000,
+      "tested_states": 6000,
       "states_with_sensitive_in_topk": 0,
       "sensitive_in_topk_rate": 0.0,
       "avg_sensitive_queries_in_topk": 0.0,
@@ -23,15 +23,7 @@
       "top_overall_concepts_in_topk": [
         [
           "oval face",
-          21112
-        ],
-        [
-          "wearing earrings",
-          5051
-        ],
-        [
-          "bags under eyes",
-          3837
+          6000
         ]
       ],
       "class_hit_states": []
@@ -45,15 +37,15 @@
         "Heavy_Makeup",
         "Wearing_Lipstick"
       ],
-      "pool_size": 10000,
+      "pool_size": 2000,
       "num_trials": 3,
-      "history_mode": "non_sensitive",
+      "history_mode": "random",
       "history_range": [
-        1,
-        2
+        0,
+        0
       ],
       "forced_topk_steps": 1,
-      "tested_states": 30000,
+      "tested_states": 6000,
       "states_with_sensitive_in_topk": 0,
       "sensitive_in_topk_rate": 0.0,
       "avg_sensitive_queries_in_topk": 0.0,
@@ -62,15 +54,7 @@
       "top_overall_concepts_in_topk": [
         [
           "oval face",
-          21461
-        ],
-        [
-          "bags under eyes",
-          7305
-        ],
-        [
-          "wearing earrings",
-          1234
+          6000
         ]
       ],
       "class_hit_states": []

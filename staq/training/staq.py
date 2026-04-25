@@ -225,12 +225,22 @@ def fit_staq(
     scheduler=None,
     max_train_batches: int | None = None,
     max_test_batches: int | None = None,
+    actor_eps_end: float | None = None,
+    actor_eps_anneal_epochs: int | None = None,
 ):
     history = []
     best = {"test_acc": -1.0}
     epoch_bar = tqdm(range(1, num_epochs + 1), desc="STAQ epochs")
+    actor_eps_start = getattr(actor, "eps", None)
+    anneal_epochs = actor_eps_anneal_epochs or num_epochs
 
     for epoch in epoch_bar:
+        if actor_eps_start is not None and actor_eps_end is not None:
+            progress = min(max(epoch - 1, 0), max(anneal_epochs - 1, 1)) / max(anneal_epochs - 1, 1)
+            current_actor_eps = float(actor_eps_start + (actor_eps_end - actor_eps_start) * progress)
+            actor.change_eps(current_actor_eps)
+        else:
+            current_actor_eps = actor_eps_start
         train_metrics = run_staq_epoch(
             loader=train_loader,
             actor=actor,
@@ -288,6 +298,7 @@ def fit_staq(
             "train_sens_q_rate": train_metrics["sens_q_rate"],
             "train_q_entropy": train_metrics["q_entropy"],
             "train_actor_grad_norm": train_metrics.get("actor_grad_norm"),
+            "actor_eps": None if current_actor_eps is None else float(current_actor_eps),
             "test_acc": test_metrics["acc"],
             "test_loss": test_metrics["loss"],
             "test_task": test_metrics["task"],
@@ -312,6 +323,7 @@ def fit_staq(
             train_acc=f"{train_metrics['acc']:.3f}",
             test_acc=f"{test_metrics['acc']:.3f}",
             test_sens=f"{test_metrics['sens_q_rate']:.3f}",
+            eps=None if current_actor_eps is None else f"{current_actor_eps:.2f}",
         )
 
         gc.collect()
