@@ -80,18 +80,36 @@ def plot_fixed_history_eval_summary(
 def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items: int = 6, conf_items: int = 8) -> str:
     stop = row[key]
     first_sensitive = "none" if stop["first_sensitive_step"] is None else str(stop["first_sensitive_step"])
+    target_name = stop.get("positive_class_name")
+    if target_name is None:
+        metric_summary = f"stop={stop['final_confidence']:.2f}"
+        metric_path = textwrap.fill(
+            f"conf path: {format_confidence_path(stop['states'], max_items=conf_items)}",
+            width=wrap_width,
+            subsequent_indent="    ",
+        )
+    else:
+        metric_summary = f"p({target_name})={stop['final_positive_prob']:.2f}"
+        empty_prob = stop.get("empty_positive_prob")
+        positive_path = format_confidence_path(stop["states"], max_items=conf_items, key="positive_prob")
+        path_text = (
+            f"p({target_name}) path: empty:{empty_prob:.2f} -> {positive_path}"
+            if empty_prob is not None
+            else f"p({target_name}) path: {positive_path}"
+        )
+        metric_path = textwrap.fill(
+            path_text,
+            width=wrap_width,
+            subsequent_indent="    ",
+        )
     lines = [
         label,
         (
             f"q={stop['queries_asked']} | sens={stop['sensitive_steps']} | "
-            f"first sensitive={first_sensitive} | stop={stop['final_confidence']:.2f} | "
+            f"first sensitive={first_sensitive} | {metric_summary} | "
             f"pred={stop['final_pred_name']}"
         ),
-        textwrap.fill(
-            f"conf path: {format_confidence_path(stop['states'], max_items=conf_items)}",
-            width=wrap_width,
-            subsequent_indent="    ",
-        ),
+        metric_path,
         textwrap.fill(
             f"path: {format_stop_sequence(stop['sequence'], max_items=seq_items)}",
             width=wrap_width,

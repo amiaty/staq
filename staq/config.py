@@ -26,8 +26,12 @@ class PathsConfig:
     gpt_answers_file: Path
 
     @property
+    def models_root(self) -> Path:
+        return self.artifacts_root / "models"
+
+    @property
     def checkpoints_root(self) -> Path:
-        return self.artifacts_root / "checkpoints"
+        return self.models_root
 
     @property
     def runs_root(self) -> Path:
@@ -38,8 +42,12 @@ class PathsConfig:
         return self.artifacts_root / "figures"
 
     @property
+    def bootstrap_models_root(self) -> Path:
+        return self.models_root / "bootstrap"
+
+    @property
     def bootstrap_checkpoints_root(self) -> Path:
-        return self.checkpoints_root / "bootstrap"
+        return self.bootstrap_models_root
 
     @property
     def reference_runs_root(self) -> Path:
@@ -63,8 +71,8 @@ class PathsConfig:
 
     def ensure_artifact_dirs(self) -> None:
         self.artifacts_root.mkdir(parents=True, exist_ok=True)
-        self.checkpoints_root.mkdir(parents=True, exist_ok=True)
-        self.bootstrap_checkpoints_root.mkdir(parents=True, exist_ok=True)
+        self.models_root.mkdir(parents=True, exist_ok=True)
+        self.bootstrap_models_root.mkdir(parents=True, exist_ok=True)
         self.runs_root.mkdir(parents=True, exist_ok=True)
         self.reference_runs_root.mkdir(parents=True, exist_ok=True)
         self.figures_root.mkdir(parents=True, exist_ok=True)

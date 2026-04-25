@@ -24,6 +24,8 @@ def evaluate_bundles_on_fixed_histories(
     max_samples: int | None = None,
     eval_seed: int = 0,
     desc: str = "Fixed-history reevaluation",
+    positive_class_idx: int | None = None,
+    positive_class_name: str | None = None,
 ) -> list[dict]:
     if not bundles_by_name:
         raise ValueError("bundles_by_name must not be empty")
@@ -38,7 +40,16 @@ def evaluate_bundles_on_fixed_histories(
     sensitive_indices = (sensitive_mask > 0.5).nonzero(as_tuple=False).flatten().cpu()
     bundle_names = list(bundles_by_name.keys())
     trial_stats = {
-        name: [{"correct": 0, "total": 0, "sensitive_query_rate": 0.0, "avg_confidence": 0.0} for _ in range(num_trials)]
+        name: [
+            {
+                "correct": 0,
+                "total": 0,
+                "sensitive_query_rate": 0.0,
+                "avg_confidence": 0.0,
+                "avg_positive_prob": 0.0,
+            }
+            for _ in range(num_trials)
+        ]
         for name in bundle_names
     }
 
@@ -78,6 +89,8 @@ def evaluate_bundles_on_fixed_histories(
                         (query_distribution * sensitive_mask_for_bundle).sum(dim=1).item()
                     )
                     stats["avg_confidence"] += float(conf[0].item())
+                    if positive_class_idx is not None:
+                        stats["avg_positive_prob"] += float(probs[0, positive_class_idx].item())
 
     summary_rows = []
     for name, bundle in bundles_by_name.items():
@@ -91,33 +104,43 @@ def evaluate_bundles_on_fixed_histories(
                     "acc": float(stats["correct"] / total),
                     "sensitive_query_rate": float(stats["sensitive_query_rate"] / total),
                     "avg_confidence": float(stats["avg_confidence"] / total),
+                    "avg_positive_prob": None
+                    if positive_class_idx is None
+                    else float(stats["avg_positive_prob"] / total),
                 }
             )
 
         acc_values = np.array([row["acc"] for row in trial_rows], dtype=float)
         sens_values = np.array([row["sensitive_query_rate"] for row in trial_rows], dtype=float)
         conf_values = np.array([row["avg_confidence"] for row in trial_rows], dtype=float)
+        positive_prob_values = None
+        if positive_class_idx is not None:
+            positive_prob_values = np.array([row["avg_positive_prob"] for row in trial_rows], dtype=float)
         lambda_adv = meta.get("lambda_adv")
         alpha_sens = meta.get("alpha_sens")
 
-        summary_rows.append(
-            {
-                "run_name": name,
-                "lambda_adv": None if lambda_adv is None else float(lambda_adv),
-                "alpha_sens": None if alpha_sens is None else float(alpha_sens),
-                "num_samples": int(len(sample_indices)),
-                "num_trials": int(num_trials),
-                "history_mode": history_mode,
-                "history_range": [int(min_history), int(max_history)],
-                "mean_acc": float(acc_values.mean()),
-                "std_acc": float(acc_values.std(ddof=0)),
-                "mean_sensitive_query_rate": float(sens_values.mean()),
-                "std_sensitive_query_rate": float(sens_values.std(ddof=0)),
-                "mean_confidence": float(conf_values.mean()),
-                "std_confidence": float(conf_values.std(ddof=0)),
-                "trial_rows": trial_rows,
-            }
-        )
+        row = {
+            "run_name": name,
+            "lambda_adv": None if lambda_adv is None else float(lambda_adv),
+            "alpha_sens": None if alpha_sens is None else float(alpha_sens),
+            "num_samples": int(len(sample_indices)),
+            "num_trials": int(num_trials),
+            "history_mode": history_mode,
+            "history_range": [int(min_history), int(max_history)],
+            "mean_acc": float(acc_values.mean()),
+            "std_acc": float(acc_values.std(ddof=0)),
+            "mean_sensitive_query_rate": float(sens_values.mean()),
+            "std_sensitive_query_rate": float(sens_values.std(ddof=0)),
+            "mean_confidence": float(conf_values.mean()),
+            "std_confidence": float(conf_values.std(ddof=0)),
+            "trial_rows": trial_rows,
+        }
+        if positive_class_idx is not None and positive_prob_values is not None:
+            row["positive_class_idx"] = int(positive_class_idx)
+            row["positive_class_name"] = positive_class_name
+            row["mean_positive_prob"] = float(positive_prob_values.mean())
+            row["std_positive_prob"] = float(positive_prob_values.std(ddof=0))
+        summary_rows.append(row)
 
     return sorted(
         summary_rows,

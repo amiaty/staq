@@ -79,7 +79,7 @@ def main():
         qa_checkpoint = str(paths.bootstrap_concept_qa_checkpoint)
     if qa_checkpoint is None:
         raise FileNotFoundError(
-            "Provide --concept-qa-checkpoint or place a bootstrap Concept-QA checkpoint in artifacts/checkpoints/bootstrap."
+            "Provide --concept-qa-checkpoint or place a bootstrap Concept-QA checkpoint in artifacts/models/bootstrap."
         )
     answering_model = load_concept_qa_checkpoint(qa_checkpoint, device=device)
 

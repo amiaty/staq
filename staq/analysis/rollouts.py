@@ -62,12 +62,23 @@ def rollout_until_confidence(
     class_names: list[str],
     threshold: float = 0.95,
     max_steps: int = 20,
+    positive_class_idx: int | None = None,
+    positive_class_name: str | None = None,
 ) -> dict:
     mask = init_mask.clone()
     masked_answers = answers_row.unsqueeze(0) * mask
     states = []
     sequence = []
     stop_reason = "max_steps"
+    empty_masked_answers = torch.zeros_like(masked_answers)
+    empty_logits = bundle["classifier"](empty_masked_answers)
+    empty_probs = F.softmax(empty_logits, dim=1)
+    empty_conf, empty_pred = empty_probs.max(dim=1)
+    empty_pred_idx = int(empty_pred[0].item())
+    empty_conf_value = float(empty_conf[0].item())
+    empty_positive_prob = None
+    if positive_class_idx is not None:
+        empty_positive_prob = float(empty_probs[0, positive_class_idx].item())
 
     for step in range(max_steps + 1):
         logits = bundle["classifier"](masked_answers)
@@ -75,14 +86,15 @@ def rollout_until_confidence(
         conf, pred = probs.max(dim=1)
         pred_idx = int(pred[0].item())
         conf_value = float(conf[0].item())
-        states.append(
-            {
-                "after_queries": int(step),
-                "pred_idx": pred_idx,
-                "pred_name": class_names[pred_idx],
-                "confidence": conf_value,
-            }
-        )
+        state = {
+            "after_queries": int(step),
+            "pred_idx": pred_idx,
+            "pred_name": class_names[pred_idx],
+            "confidence": conf_value,
+        }
+        if positive_class_idx is not None:
+            state["positive_prob"] = float(probs[0, positive_class_idx].item())
+        states.append(state)
 
         if conf_value >= threshold:
             stop_reason = "confidence"
@@ -112,7 +124,7 @@ def rollout_until_confidence(
         masked_answers[0, query_idx] = answers_row[query_idx]
 
     first_sensitive = next((item["step"] for item in sequence if item["sensitive"]), None)
-    return {
+    result = {
         "states": states,
         "sequence": sequence,
         "queries_asked": int(len(sequence)),
@@ -125,7 +137,17 @@ def rollout_until_confidence(
         "final_confidence": float(states[-1]["confidence"]),
         "initial_confidence": float(states[0]["confidence"]),
         "initial_pred_name": states[0]["pred_name"],
+        "empty_confidence": empty_conf_value,
+        "empty_pred_idx": empty_pred_idx,
+        "empty_pred_name": class_names[empty_pred_idx],
     }
+    if positive_class_idx is not None:
+        result["positive_class_idx"] = int(positive_class_idx)
+        result["positive_class_name"] = positive_class_name or class_names[positive_class_idx]
+        result["empty_positive_prob"] = float(empty_positive_prob)
+        result["initial_positive_prob"] = float(states[0]["positive_prob"])
+        result["final_positive_prob"] = float(states[-1]["positive_prob"])
+    return result
 
 
 def format_stop_sequence(sequence: list[dict], max_items: int | None = None) -> str:
@@ -141,11 +163,11 @@ def format_stop_sequence(sequence: list[dict], max_items: int | None = None) -> 
     return " -> ".join(parts)
 
 
-def format_confidence_path(states: list[dict], max_items: int | None = None) -> str:
+def format_confidence_path(states: list[dict], max_items: int | None = None, key: str = "confidence") -> str:
     if not states:
         return "(no confidence states)"
     items = states if max_items is None else states[:max_items]
-    parts = [f"{item['after_queries']}:{item['confidence']:.2f}" for item in items]
+    parts = [f"{item['after_queries']}:{item[key]:.2f}" for item in items]
     if max_items is not None and len(states) > max_items:
         parts.append("...")
     return " -> ".join(parts)
