@@ -87,6 +87,8 @@ def run_staq_epoch(
     sensitive_topk: int,
     train: bool = True,
     max_batches: int | None = None,
+    sensitive_target_mode: str = "soft",
+    sensitive_target_indices: torch.Tensor | None = None,
 ):
     crit_task = nn.CrossEntropyLoss()
     crit_sens = nn.BCEWithLogitsLoss()
@@ -106,6 +108,7 @@ def run_staq_epoch(
     sum_loss = 0.0
     sum_task = 0.0
     sum_sens = 0.0
+    sum_sens_acc = 0.0
     sum_qpen = 0.0
     sum_sens_q_rate = 0.0
     sum_q_entropy = 0.0
@@ -119,20 +122,27 @@ def run_staq_epoch(
 
         with torch.no_grad():
             image_features = encode_images(model_clip=model_clip, images=images, device=clip_device)
+            target_sens_idx = sens_idx if sensitive_target_indices is None else sensitive_target_indices
             if concept_targets is None:
-                s_soft, _ = compute_s_from_image_features(
+                s_soft, s_hard = compute_s_from_image_features(
                     image_features=image_features,
                     logit_scale=model_clip.logit_scale.exp(),
                     dictionary=dictionary,
-                    sens_idx=sens_idx,
+                    sens_idx=target_sens_idx,
                     tau=sensitive_tau,
                     topk=sensitive_topk,
                 )
             else:
-                s_soft, _ = compute_s_from_concept_targets(
+                s_soft, s_hard = compute_s_from_concept_targets(
                     concept_targets=concept_targets.to(train_device),
-                    sens_idx=sens_idx,
+                    sens_idx=target_sens_idx,
                 )
+            if sensitive_target_mode == "soft":
+                s_target = s_soft
+            elif sensitive_target_mode in {"hard", "max"}:
+                s_target = s_hard
+            else:
+                raise ValueError(f"Unknown sensitive_target_mode: {sensitive_target_mode}")
             answers = concept_answers_from_image_features(
                 image_features=image_features,
                 dictionary=dictionary,
@@ -159,7 +169,9 @@ def run_staq_epoch(
             loss_task = crit_task(logits_cls, labels)
 
             s_logits = s_head(GradientReversal.apply(updated_answers, lambda_adv)).squeeze(1)
-            loss_sens = crit_sens(s_logits, s_soft.to(train_device).float())
+            loss_sens = crit_sens(s_logits, s_target.to(train_device).float())
+            sens_preds = (torch.sigmoid(s_logits) > 0.5).float()
+            sens_acc = (sens_preds == s_target.to(train_device).float()).float().mean()
             loss_qpen = (query_distribution * sensitive_mask).sum(dim=1).mean() * alpha_sens
             loss = loss_task + loss_sens + loss_qpen
 
@@ -183,6 +195,7 @@ def run_staq_epoch(
         sum_loss += float(loss.item())
         sum_task += float(loss_task.item())
         sum_sens += float(loss_sens.item())
+        sum_sens_acc += float(sens_acc.item())
         sum_qpen += float(loss_qpen.item())
         sum_sens_q_rate += float((query_distribution * sensitive_mask).sum(dim=1).mean().item())
         sum_q_entropy += float(q_entropy.item())
@@ -193,6 +206,7 @@ def run_staq_epoch(
         "loss": sum_loss / max(n_batches, 1),
         "task": sum_task / max(n_batches, 1),
         "sens": sum_sens / max(n_batches, 1),
+        "sens_acc": sum_sens_acc / max(n_batches, 1),
         "qpen": sum_qpen / max(n_batches, 1),
         "sens_q_rate": sum_sens_q_rate / max(n_batches, 1),
         "q_entropy": sum_q_entropy / max(n_batches, 1),
@@ -227,6 +241,8 @@ def fit_staq(
     max_test_batches: int | None = None,
     actor_eps_end: float | None = None,
     actor_eps_anneal_epochs: int | None = None,
+    sensitive_target_mode: str = "soft",
+    sensitive_target_indices: torch.Tensor | None = None,
 ):
     history = []
     best = {"test_acc": -1.0}
@@ -261,6 +277,8 @@ def fit_staq(
             sensitive_topk=sensitive_topk,
             train=True,
             max_batches=max_train_batches,
+            sensitive_target_mode=sensitive_target_mode,
+            sensitive_target_indices=sensitive_target_indices,
         )
         test_metrics = run_staq_epoch(
             loader=test_loader,
@@ -282,6 +300,8 @@ def fit_staq(
             sensitive_topk=sensitive_topk,
             train=False,
             max_batches=max_test_batches,
+            sensitive_target_mode=sensitive_target_mode,
+            sensitive_target_indices=sensitive_target_indices,
         )
         if scheduler is not None:
             scheduler.step()
@@ -294,15 +314,18 @@ def fit_staq(
             "train_loss": train_metrics["loss"],
             "train_task": train_metrics["task"],
             "train_sens": train_metrics["sens"],
+            "train_sens_acc": train_metrics["sens_acc"],
             "train_qpen": train_metrics["qpen"],
             "train_sens_q_rate": train_metrics["sens_q_rate"],
             "train_q_entropy": train_metrics["q_entropy"],
             "train_actor_grad_norm": train_metrics.get("actor_grad_norm"),
             "actor_eps": None if current_actor_eps is None else float(current_actor_eps),
+            "sensitive_target_mode": sensitive_target_mode,
             "test_acc": test_metrics["acc"],
             "test_loss": test_metrics["loss"],
             "test_task": test_metrics["task"],
             "test_sens": test_metrics["sens"],
+            "test_sens_acc": test_metrics["sens_acc"],
             "test_qpen": test_metrics["qpen"],
             "test_sens_q_rate": test_metrics["sens_q_rate"],
             "test_q_entropy": test_metrics["q_entropy"],
