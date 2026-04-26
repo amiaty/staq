@@ -1,0 +1,162 @@
+[
+  {
+    "run_name": "baseline",
+    "lambda_adv": 0.0,
+    "alpha_sens": 0.0,
+    "num_samples": 19962,
+    "num_trials": 8,
+    "history_mode": "non_sensitive",
+    "history_range": [
+      1,
+      2
+    ],
+    "mean_acc": 0.5947800821560966,
+    "std_acc": 0.0014100258436066252,
+    "mean_sensitive_query_rate": 0.0,
+    "std_sensitive_query_rate": 0.0,
+    "mean_confidence": 0.6336085870813486,
+    "std_confidence": 0.0004858473842626499,
+    "trial_rows": [
+      {
+        "trial": 0,
+        "acc": 0.5956817954112814,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6342036920802028,
+        "avg_positive_prob": 0.462894480412326
+      },
+      {
+        "trial": 1,
+        "acc": 0.5967838893898407,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6337401324761988,
+        "avg_positive_prob": 0.4633362308344625
+      },
+      {
+        "trial": 2,
+        "acc": 0.5943292255285042,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6331805885047118,
+        "avg_positive_prob": 0.461682314565074
+      },
+      {
+        "trial": 3,
+        "acc": 0.5943793207093477,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6337938779533393,
+        "avg_positive_prob": 0.4630621997573287
+      },
+      {
+        "trial": 4,
+        "acc": 0.5939785592625989,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6328196672958024,
+        "avg_positive_prob": 0.4618403565837654
+      },
+      {
+        "trial": 5,
+        "acc": 0.5922753231139164,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6334993468533894,
+        "avg_positive_prob": 0.46147144344437396
+      },
+      {
+        "trial": 6,
+        "acc": 0.5941789399859734,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6332775062065231,
+        "avg_positive_prob": 0.4624493640610778
+      },
+      {
+        "trial": 7,
+        "acc": 0.5966336038473099,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6343538852806213,
+        "avg_positive_prob": 0.4635965017522161
+      }
+    ],
+    "positive_class_idx": 1,
+    "positive_class_name": "smiling",
+    "mean_positive_prob": 0.46254161142632805,
+    "std_positive_prob": 0.000751969154209748
+  },
+  {
+    "run_name": "lam=0.8",
+    "lambda_adv": 0.8,
+    "alpha_sens": 0.0,
+    "num_samples": 19962,
+    "num_trials": 8,
+    "history_mode": "non_sensitive",
+    "history_range": [
+      1,
+      2
+    ],
+    "mean_acc": 0.6153629395852118,
+    "std_acc": 0.001440059471708548,
+    "mean_sensitive_query_rate": 0.0,
+    "std_sensitive_query_rate": 0.0,
+    "mean_confidence": 0.6401579036361414,
+    "std_confidence": 0.0002862434583894247,
+    "trial_rows": [
+      {
+        "trial": 0,
+        "acc": 0.6145676785893197,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6403307747672476,
+        "avg_positive_prob": 0.4873598582976185
+      },
+      {
+        "trial": 1,
+        "acc": 0.6183248171525899,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6401560615590287,
+        "avg_positive_prob": 0.4880122337966199
+      },
+      {
+        "trial": 2,
+        "acc": 0.6158701532912534,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6406902354951493,
+        "avg_positive_prob": 0.4875793344164024
+      },
+      {
+        "trial": 3,
+        "acc": 0.6155695822061917,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6402050572787219,
+        "avg_positive_prob": 0.4880564522989861
+      },
+      {
+        "trial": 4,
+        "acc": 0.6152189159402865,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6396807212203027,
+        "avg_positive_prob": 0.48724348131855005
+      },
+      {
+        "trial": 5,
+        "acc": 0.615920248472097,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6401016466060534,
+        "avg_positive_prob": 0.4870818777954324
+      },
+      {
+        "trial": 6,
+        "acc": 0.6129646328023244,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6398425263711653,
+        "avg_positive_prob": 0.487644633382944
+      },
+      {
+        "trial": 7,
+        "acc": 0.6144674882276325,
+        "sensitive_query_rate": 0.0,
+        "avg_confidence": 0.6402562057914625,
+        "avg_positive_prob": 0.48726936696156414
+      }
+    ],
+    "positive_class_idx": 1,
+    "positive_class_name": "smiling",
+    "mean_positive_prob": 0.4875309047835147,
+    "std_positive_prob": 0.00033635060770559674
+  }
+]

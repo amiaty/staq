@@ -1,0 +1,74 @@
+{
+  "baseline": {
+    "summary": {
+      "matched_sensitive_concepts": [
+        "Male",
+        "No_Beard",
+        "Mustache",
+        "Goatee",
+        "Sideburns",
+        "5_o_Clock_Shadow",
+        "Heavy_Makeup",
+        "Wearing_Lipstick"
+      ],
+      "pool_size": 10000,
+      "num_trials": 3,
+      "history_mode": "random",
+      "history_range": [
+        0,
+        0
+      ],
+      "forced_topk_steps": 1,
+      "tested_states": 30000,
+      "states_with_sensitive_in_topk": 0,
+      "sensitive_in_topk_rate": 0.0,
+      "avg_sensitive_queries_in_topk": 0.0,
+      "position_hits": {},
+      "top_sensitive_concepts": [],
+      "top_overall_concepts_in_topk": [
+        [
+          "oval face",
+          30000
+        ]
+      ],
+      "class_hit_states": []
+    },
+    "examples": []
+  },
+  "lam_0.80": {
+    "summary": {
+      "matched_sensitive_concepts": [
+        "Male",
+        "No_Beard",
+        "Mustache",
+        "Goatee",
+        "Sideburns",
+        "5_o_Clock_Shadow",
+        "Heavy_Makeup",
+        "Wearing_Lipstick"
+      ],
+      "pool_size": 10000,
+      "num_trials": 3,
+      "history_mode": "random",
+      "history_range": [
+        0,
+        0
+      ],
+      "forced_topk_steps": 1,
+      "tested_states": 30000,
+      "states_with_sensitive_in_topk": 0,
+      "sensitive_in_topk_rate": 0.0,
+      "avg_sensitive_queries_in_topk": 0.0,
+      "position_hits": {},
+      "top_sensitive_concepts": [],
+      "top_overall_concepts_in_topk": [
+        [
+          "oval face",
+          30000
+        ]
+      ],
+      "class_hit_states": []
+    },
+    "examples": []
+  }
+}
