@@ -138,7 +138,7 @@ class Cifar10StaqConfig:
 class CelebAStaqConfig:
     dataset_name: str = "celeba"
     clip_model_name: str = "ViT-B/16"
-    target_attribute: str = "Smiling"
+    target_attribute: str = "Attractive"
     sensitive_attributes: tuple[str, ...] = (
         "Male",
         "No_Beard",
@@ -149,12 +149,7 @@ class CelebAStaqConfig:
         "Heavy_Makeup",
         "Wearing_Lipstick",
     )
-    excluded_query_attributes: tuple[str, ...] = (
-        "High_Cheekbones",
-        "Mouth_Slightly_Open",
-        "Rosy_Cheeks",
-    )
-    max_queries: int = 36
+    max_queries: int = 39
     num_classes: int = 2
     threshold_for_binarization: float = 0.0
     confidence_threshold: float = 0.95

@@ -41,14 +41,12 @@ def build_celeba_attribute_spec(
     attr_names: list[str],
     target_attribute: str,
     sensitive_attributes: list[str] | tuple[str, ...],
-    excluded_query_attributes: list[str] | tuple[str, ...] = (),
 ) -> CelebAAttributeSpec:
     if target_attribute not in attr_names:
         raise ValueError(f"Unknown target attribute: {target_attribute}")
 
     target_index = attr_names.index(target_attribute)
-    excluded_query_set = {target_attribute, *excluded_query_attributes}
-    query_attribute_names = [name for name in attr_names if name not in excluded_query_set]
+    query_attribute_names = [name for name in attr_names if name != target_attribute]
     query_attribute_indices = [attr_names.index(name) for name in query_attribute_names]
     concept_names = [humanize_celeba_attribute(name) for name in query_attribute_names]
 
@@ -92,7 +90,6 @@ def load_celeba_attribute_spec(
     root: str | Path,
     target_attribute: str,
     sensitive_attributes: list[str] | tuple[str, ...],
-    excluded_query_attributes: list[str] | tuple[str, ...] = (),
     download: bool = False,
 ) -> CelebAAttributeSpec:
     dataset = torchvision.datasets.CelebA(
@@ -107,7 +104,6 @@ def load_celeba_attribute_spec(
         attr_names=attr_names,
         target_attribute=target_attribute,
         sensitive_attributes=sensitive_attributes,
-        excluded_query_attributes=excluded_query_attributes,
     )
 
 
