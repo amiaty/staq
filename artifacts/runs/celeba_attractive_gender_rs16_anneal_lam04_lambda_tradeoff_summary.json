@@ -1,0 +1,42 @@
+[
+  {
+    "run_name": "baseline",
+    "lambda_adv": 0.0,
+    "best_epoch": 2,
+    "test_acc": 0.7224543212362209,
+    "test_sens_q_rate": 0.6740054965019227,
+    "test_loss": 0.7327864617109299,
+    "test_q_entropy": 6.999858692324779e-06,
+    "actor_eps": 0.8
+  },
+  {
+    "run_name": "lam_0.20",
+    "lambda_adv": 0.2,
+    "best_epoch": 4,
+    "test_acc": 0.7145517692656164,
+    "test_sens_q_rate": 0.3083228781819344,
+    "test_loss": 0.8325586229562759,
+    "test_q_entropy": 6.999858692324779e-06,
+    "actor_eps": 0.3999999999999999
+  },
+  {
+    "run_name": "lam_0.40",
+    "lambda_adv": 0.4,
+    "best_epoch": 1,
+    "test_acc": 0.6940655358131576,
+    "test_sens_q_rate": 0.0,
+    "test_loss": 0.9201234400272369,
+    "test_q_entropy": 6.999858692324779e-06,
+    "actor_eps": 1.0
+  },
+  {
+    "run_name": "lam_0.80",
+    "lambda_adv": 0.8,
+    "best_epoch": 2,
+    "test_acc": 0.701364071072633,
+    "test_sens_q_rate": 0.0,
+    "test_loss": 0.8958917856216431,
+    "test_q_entropy": 6.999858692324779e-06,
+    "actor_eps": 0.8
+  }
+]
