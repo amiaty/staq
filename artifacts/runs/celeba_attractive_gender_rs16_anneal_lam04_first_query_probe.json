@@ -1,0 +1,131 @@
+{
+  "baseline": {
+    "summary": {
+      "matched_sensitive_concepts": [
+        "Male",
+        "No_Beard",
+        "Mustache",
+        "Goatee",
+        "Sideburns",
+        "5_o_Clock_Shadow",
+        "Heavy_Makeup",
+        "Wearing_Lipstick"
+      ],
+      "pool_size": 10000,
+      "num_trials": 3,
+      "history_mode": "random",
+      "history_range": [
+        0,
+        0
+      ],
+      "forced_topk_steps": 1,
+      "tested_states": 30000,
+      "states_with_sensitive_in_topk": 30000,
+      "sensitive_in_topk_rate": 1.0,
+      "avg_sensitive_queries_in_topk": 1.0,
+      "position_hits": {
+        "1": 30000
+      },
+      "top_sensitive_concepts": [
+        [
+          "wearing lipstick",
+          30000
+        ]
+      ],
+      "top_overall_concepts_in_topk": [
+        [
+          "wearing lipstick",
+          30000
+        ]
+      ],
+      "class_hit_states": [
+        [
+          "not attractive",
+          15243
+        ],
+        [
+          "attractive",
+          14757
+        ]
+      ]
+    },
+    "examples": [
+      {
+        "sample_idx": 13302,
+        "label": "not attractive",
+        "initial_history": [],
+        "topk": [
+          "1. wearing lipstick [S]"
+        ]
+      },
+      {
+        "sample_idx": 13302,
+        "label": "not attractive",
+        "initial_history": [],
+        "topk": [
+          "1. wearing lipstick [S]"
+        ]
+      },
+      {
+        "sample_idx": 13302,
+        "label": "not attractive",
+        "initial_history": [],
+        "topk": [
+          "1. wearing lipstick [S]"
+        ]
+      },
+      {
+        "sample_idx": 6664,
+        "label": "not attractive",
+        "initial_history": [],
+        "topk": [
+          "1. wearing lipstick [S]"
+        ]
+      },
+      {
+        "sample_idx": 6664,
+        "label": "not attractive",
+        "initial_history": [],
+        "topk": [
+          "1. wearing lipstick [S]"
+        ]
+      }
+    ]
+  },
+  "lam_0.40": {
+    "summary": {
+      "matched_sensitive_concepts": [
+        "Male",
+        "No_Beard",
+        "Mustache",
+        "Goatee",
+        "Sideburns",
+        "5_o_Clock_Shadow",
+        "Heavy_Makeup",
+        "Wearing_Lipstick"
+      ],
+      "pool_size": 10000,
+      "num_trials": 3,
+      "history_mode": "random",
+      "history_range": [
+        0,
+        0
+      ],
+      "forced_topk_steps": 1,
+      "tested_states": 30000,
+      "states_with_sensitive_in_topk": 0,
+      "sensitive_in_topk_rate": 0.0,
+      "avg_sensitive_queries_in_topk": 0.0,
+      "position_hits": {},
+      "top_sensitive_concepts": [],
+      "top_overall_concepts_in_topk": [
+        [
+          "young",
+          30000
+        ]
+      ],
+      "class_hit_states": []
+    },
+    "examples": []
+  }
+}
