@@ -77,6 +77,53 @@ def plot_fixed_history_eval_summary(
     return output_path
 
 
+def plot_lambda_tradeoff_summary(
+    summary_rows: list[dict],
+    output_path: str | Path,
+) -> Path:
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if not summary_rows:
+        raise ValueError("summary_rows must not be empty")
+
+    rows = sorted(summary_rows, key=lambda row: float(row["lambda_adv"]))
+    lambdas = [float(row["lambda_adv"]) for row in rows]
+    acc = [float(row["test_acc"]) for row in rows]
+    sens = [float(row["test_sens_q_rate"]) for row in rows]
+
+    fig, axes = plt.subplots(1, 2, figsize=(12.5, 4.6))
+
+    axes[0].plot(sens, acc, marker="o", linewidth=2.2, color="#3a6ea5")
+    for row in rows:
+        label = "baseline" if float(row["lambda_adv"]) == 0.0 else f"lambda={row['lambda_adv']:.2f}"
+        axes[0].annotate(
+            label,
+            (float(row["test_sens_q_rate"]), float(row["test_acc"])),
+            textcoords="offset points",
+            xytext=(0, 8),
+            ha="center",
+            fontsize=9.5,
+        )
+    axes[0].set_title("Utility-sensitivity trade-off")
+    axes[0].set_xlabel("Sensitive query rate")
+    axes[0].set_ylabel("Accuracy")
+    axes[0].grid(alpha=0.25)
+
+    axes[1].plot(lambdas, acc, marker="o", linewidth=2.2, label="Accuracy", color="#3a6ea5")
+    axes[1].plot(lambdas, sens, marker="s", linewidth=2.2, label="Sensitive query rate", color="#b58b00")
+    axes[1].set_title("Lambda sweep")
+    axes[1].set_xlabel("lambda_adv")
+    axes[1].set_ylabel("Metric value")
+    axes[1].set_ylim(0.0, 1.0)
+    axes[1].grid(alpha=0.25)
+    axes[1].legend(frameon=False)
+
+    plt.tight_layout()
+    fig.savefig(output_path, dpi=220, bbox_inches="tight")
+    plt.close(fig)
+    return output_path
+
+
 def _format_metric_path(
     row: dict,
     stop: dict,
