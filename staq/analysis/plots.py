@@ -109,10 +109,8 @@ def _format_metric_path(
 
 def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items: int = 6, conf_items: int = 8) -> str:
     stop = row[key]
-    first_sensitive = "none" if stop["first_sensitive_step"] is None else str(stop["first_sensitive_step"])
     target_name = stop.get("positive_class_name")
     if target_name is None:
-        metric_summary = f"conf={stop['final_confidence']:.2f} | stop={stop['stop_reason']}"
         metric_lines = [
             _format_metric_path(
                 row,
@@ -126,10 +124,6 @@ def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items
             )
         ]
     else:
-        metric_summary = (
-            f"p({target_name})={stop['final_positive_prob']:.2f} | "
-            f"conf={stop['final_confidence']:.2f} | stop={stop['stop_reason']}"
-        )
         metric_lines = [
             _format_metric_path(
                 row,
@@ -156,8 +150,7 @@ def _wrap_block(label: str, row: dict, key: str, wrap_width: int = 64, seq_items
         label,
         (
             f"q={stop['queries_asked']} | sens={stop['sensitive_steps']} | "
-            f"first sensitive={first_sensitive} | {metric_summary} | "
-            f"pred={stop['final_pred_name']}"
+            f"stop={stop['stop_reason']} | pred={stop['final_pred_name']}"
         ),
         *metric_lines,
         textwrap.fill(
@@ -174,6 +167,14 @@ def plot_rollout_comparisons(
     raw_dataset,
     output_path: str | Path,
     title_prefix: str,
+    box_fontsize: float = 14,
+    title_fontsize: float = 16,
+    text_wrap_width: int = 84,
+    path_items: int = 10,
+    confidence_items: int = 10,
+    column_wspace: float = 0.10,
+    left_margin: float = 0.012,
+    right_margin: float = 0.999,
 ) -> Path:
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -184,8 +185,8 @@ def plot_rollout_comparisons(
     fig, axes = plt.subplots(
         len(records),
         3,
-        figsize=(23.0, max(4.2, 4.0 * len(records))),
-        gridspec_kw={"width_ratios": [1.0, 1.75, 1.75]},
+        figsize=(25.0, max(4.5, 4.3 * len(records))),
+        gridspec_kw={"width_ratios": [0.72, 2.55, 2.55]},
     )
     if len(records) == 1:
         axes = np.array([axes])
@@ -194,10 +195,10 @@ def plot_rollout_comparisons(
         image, _ = raw_dataset[row["sample_idx"]]
         ax_img.imshow(image)
         ax_img.axis("off")
+        start_text = ", ".join(row["initial_history"]) if row["initial_history"] else "(empty)"
         ax_img.set_title(
-            f"idx={row['sample_idx']} | true={row['label_name']} | "
-            f"gap={row['sensitive_gap']} | div={row['first_divergence_step']}",
-            fontsize=11.5,
+            f"sample {row['sample_idx']}\ntrue: {row['label_name']}\nhistory ({row['initial_history_size']}): {start_text}",
+            fontsize=title_fontsize,
             pad=8,
         )
 
@@ -206,42 +207,46 @@ def plot_rollout_comparisons(
             ax.set_xlim(0, 1)
             ax.set_ylim(0, 1)
 
-        start_text = ", ".join(row["initial_history"]) if row["initial_history"] else "(empty)"
-        meta_parts = [
-            f"history ({row['initial_history_size']}): {start_text}",
-            f"both correct: {'yes' if row['both_correct'] else 'no'}",
-            f"divergence: {row['first_divergence_step']}",
-        ]
-        meta_text = textwrap.fill(" | ".join(meta_parts), width=40)
-
         ax_base.text(
-            0.02,
+            0.0,
             0.98,
-            meta_text
-            + "\n\n"
-            + _wrap_block("Baseline", row, "baseline", wrap_width=36, seq_items=4, conf_items=4),
-            fontsize=9.0,
+            _wrap_block(
+                "Baseline",
+                row,
+                "baseline",
+                wrap_width=text_wrap_width,
+                seq_items=path_items,
+                conf_items=confidence_items,
+            ),
+            fontsize=box_fontsize,
             va="top",
             ha="left",
-            linespacing=1.25,
+            linespacing=1.28,
             family="monospace",
             transform=ax_base.transAxes,
-            bbox=dict(boxstyle="round,pad=0.35", facecolor="#fff8f8", edgecolor="#c05050", linewidth=1.0),
+            bbox=dict(boxstyle="round,pad=0.40", facecolor="#fff8dc", edgecolor="#b58b00", linewidth=1.1),
         )
         ax_staq.text(
-            0.02,
+            0.0,
             0.98,
-            _wrap_block("STAQ", row, "staq", wrap_width=36, seq_items=4, conf_items=4),
-            fontsize=9.0,
+            _wrap_block(
+                "STAQ",
+                row,
+                "staq",
+                wrap_width=text_wrap_width,
+                seq_items=path_items,
+                conf_items=confidence_items,
+            ),
+            fontsize=box_fontsize,
             va="top",
             ha="left",
-            linespacing=1.25,
+            linespacing=1.28,
             family="monospace",
             transform=ax_staq.transAxes,
-            bbox=dict(boxstyle="round,pad=0.35", facecolor="#f8fff8", edgecolor="#2e7d32", linewidth=1.0),
+            bbox=dict(boxstyle="round,pad=0.40", facecolor="#eef5ff", edgecolor="#3a6ea5", linewidth=1.1),
         )
 
-    plt.subplots_adjust(left=0.03, right=0.99, top=0.97, bottom=0.03, wspace=0.04, hspace=0.24)
+    plt.subplots_adjust(left=left_margin, right=right_margin, top=0.965, bottom=0.03, wspace=column_wspace, hspace=0.30)
     fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     return output_path

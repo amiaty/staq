@@ -74,6 +74,9 @@ def sample_intuition_replays(
     rollout_max_steps: int = 20,
     positive_class_idx: int | None = None,
     positive_class_name: str | None = None,
+    balance_labels: bool = False,
+    balance_concept_idx: int | None = None,
+    balance_concept_name: str | None = None,
 ) -> list[dict]:
     rng = np.random.default_rng(random_seed)
     sample_indices = rng.permutation(len(dataset))[: min(pool_size, len(dataset))]
@@ -124,19 +127,23 @@ def sample_intuition_replays(
                 )
                 if require_nontrivial and baseline_stop["queries_asked"] == 0 and staq_stop["queries_asked"] == 0:
                     continue
-                records.append(
-                    _build_record(
-                        sample_idx=int(sample_idx),
-                        trial=trial,
-                        label_idx=label_idx,
-                        label_name=label_name,
-                        init_history_idx=init_history_idx,
-                        answers_row=answers_row,
-                        baseline_stop=baseline_stop,
-                        staq_stop=staq_stop,
-                        concepts=concepts,
-                    )
+                record = _build_record(
+                    sample_idx=int(sample_idx),
+                    trial=trial,
+                    label_idx=label_idx,
+                    label_name=label_name,
+                    init_history_idx=init_history_idx,
+                    answers_row=answers_row,
+                    baseline_stop=baseline_stop,
+                    staq_stop=staq_stop,
+                    concepts=concepts,
                 )
+                if balance_concept_idx is not None and hasattr(dataset, "query_targets"):
+                    concept_value = float(dataset.query_targets[int(sample_idx), int(balance_concept_idx)].item())
+                    record["balance_concept_idx"] = int(balance_concept_idx)
+                    record["balance_concept_name"] = balance_concept_name or concepts[int(balance_concept_idx)]
+                    record["balance_concept_value"] = int(concept_value > 0.5)
+                records.append(record)
 
     def _intuition_sort_key(row: dict):
         divergence = row["first_divergence_step"]
@@ -169,11 +176,45 @@ def sample_intuition_replays(
     candidate_pool = sorted(candidate_pool, key=_intuition_sort_key, reverse=True)
     selected = []
     seen = set()
+
+    def _add_first_unseen(rows: list[dict], start: int) -> int:
+        for idx in range(start, len(rows)):
+            row = rows[idx]
+            if row["sample_idx"] in seen:
+                continue
+            selected.append(row)
+            seen.add(row["sample_idx"])
+            return idx + 1
+        return len(rows)
+
+    if balance_labels:
+        def _balance_key(row: dict):
+            if "balance_concept_value" in row:
+                return (row["label_idx"], row["balance_concept_value"])
+            return (row["label_idx"],)
+
+        label_order = sorted({_balance_key(row) for row in candidate_pool})
+        label_buckets = {
+            key: [row for row in candidate_pool if _balance_key(row) == key]
+            for key in label_order
+        }
+        positions = {key: 0 for key in label_order}
+        while len(selected) < num_cases and label_order:
+            added_this_round = False
+            for key in label_order:
+                before = len(selected)
+                positions[key] = _add_first_unseen(label_buckets[key], positions[key])
+                added_this_round = added_this_round or len(selected) > before
+                if len(selected) >= num_cases:
+                    break
+            if not added_this_round:
+                break
+
     for row in candidate_pool:
+        if len(selected) >= num_cases:
+            break
         if row["sample_idx"] in seen:
             continue
         selected.append(row)
         seen.add(row["sample_idx"])
-        if len(selected) >= num_cases:
-            break
     return selected

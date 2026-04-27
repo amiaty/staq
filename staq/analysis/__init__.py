@@ -1,4 +1,3 @@
-from .diagnostics import probe_topk_sensitive_queries
 from .fixed_history_eval import evaluate_bundles_on_fixed_histories
 from .plots import (
     plot_fixed_history_eval_summary,
@@ -21,7 +20,6 @@ __all__ = [
     "format_stop_sequence",
     "plot_fixed_history_eval_summary",
     "plot_rollout_comparisons",
-    "probe_topk_sensitive_queries",
     "rollout_until_confidence",
     "sample_intuition_replays",
 ]
